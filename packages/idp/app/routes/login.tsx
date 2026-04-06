@@ -1,6 +1,8 @@
+import { useRef } from 'react'
+import { useForm } from 'react-hook-form'
 import { data, redirect } from 'react-router'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
-import { Form, useActionData, useLoaderData } from 'react-router'
+import { useActionData, useLoaderData, useSubmit } from 'react-router'
 import { validateCredentials } from '../lib/api-client'
 import { buildSessionCookie, signSession } from '../sessions.server'
 
@@ -39,11 +41,30 @@ export async function action({ request }: ActionFunctionArgs) {
   })
 }
 
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+interface LoginFields {
+  email: string
+  password: string
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function LoginPage() {
   const { redirectTo } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
+  const submit = useSubmit()
+  const formRef = useRef<HTMLFormElement>(null)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFields>()
+
+  function onValid() {
+    if (formRef.current) submit(formRef.current, { method: 'post' })
+  }
 
   return (
     <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -76,9 +97,14 @@ export default function LoginPage() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <Form method="post" className="space-y-6">
+          <form
+            ref={formRef}
+            method="post"
+            onSubmit={handleSubmit(onValid)}
+            className="space-y-6"
+            noValidate
+          >
             <input type="hidden" name="redirect" value={redirectTo} />
-
             {actionData && 'error' in actionData && (
               <div className="rounded-md bg-red-50 p-4">
                 <p className="text-sm text-red-700">{actionData.error}</p>
@@ -95,13 +121,27 @@ export default function LoginPage() {
               <div className="mt-1">
                 <input
                   id="email"
-                  name="email"
                   type="email"
                   autoComplete="email"
-                  required
-                  className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                   placeholder="you@example.com"
+                  className={`block w-full appearance-none rounded-md border px-3 py-2 placeholder-gray-400 shadow-sm focus:outline-none sm:text-sm ${
+                    errors.email
+                      ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                  }`}
+                  {...register('email', {
+                    required: 'Email is required',
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: 'Enter a valid email address',
+                    },
+                  })}
                 />
+                {errors.email && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -115,12 +155,22 @@ export default function LoginPage() {
               <div className="mt-1">
                 <input
                   id="password"
-                  name="password"
                   type="password"
                   autoComplete="current-password"
-                  required
-                  className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                  className={`block w-full appearance-none rounded-md border px-3 py-2 placeholder-gray-400 shadow-sm focus:outline-none sm:text-sm ${
+                    errors.password
+                      ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                      : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                  }`}
+                  {...register('password', {
+                    required: 'Password is required',
+                  })}
                 />
+                {errors.password && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -142,7 +192,7 @@ export default function LoginPage() {
                 Create one
               </a>
             </p>
-          </Form>
+          </form>
         </div>
       </div>
     </div>

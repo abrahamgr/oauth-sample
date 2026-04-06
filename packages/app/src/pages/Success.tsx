@@ -1,15 +1,7 @@
 import { Link } from 'react-router'
-import { useNavigate } from 'react-router'
 import { logout } from '../oauth'
 
 export default function Success() {
-  const navigate = useNavigate()
-
-  function handleLogout() {
-    logout()
-    navigate('/')
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-white flex items-center justify-center p-8">
       <div className="max-w-md w-full text-center">
@@ -71,7 +63,7 @@ export default function Success() {
           </Link>
           <button
             type="button"
-            onClick={handleLogout}
+            onClick={logout}
             className="flex-1 flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-xl shadow-sm border border-gray-200 transition-colors cursor-pointer"
           >
             Logout

@@ -1,6 +1,9 @@
-import { startLogin } from '../oauth'
+import { Link } from 'react-router'
+import { isLoggedIn, logout, startLogin } from '../oauth'
 
 export default function Home() {
+  const loggedIn = isLoggedIn()
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white flex flex-col items-center justify-center p-8">
       <div className="max-w-md w-full text-center">
@@ -74,27 +77,45 @@ export default function Home() {
           </ol>
         </div>
 
-        <button
-          type="button"
-          onClick={() => startLogin()}
-          className="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow transition-colors cursor-pointer"
-        >
-          <svg
-            aria-hidden="true"
-            className="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+        {loggedIn ? (
+          <div className="flex gap-3">
+            <Link
+              to="/profile"
+              className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow transition-colors"
+            >
+              View Profile
+            </Link>
+            <button
+              type="button"
+              onClick={logout}
+              className="flex-1 flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-xl shadow-sm border border-gray-200 transition-colors cursor-pointer"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => startLogin()}
+            className="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow transition-colors cursor-pointer"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-            />
-          </svg>
-          Login with OAuth
-        </button>
+            <svg
+              aria-hidden="true"
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+              />
+            </svg>
+            Login with OAuth
+          </button>
+        )}
       </div>
     </div>
   )

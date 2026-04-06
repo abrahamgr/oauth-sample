@@ -24,11 +24,6 @@ export default function Profile() {
       .finally(() => setLoading(false))
   }, [navigate])
 
-  function handleLogout() {
-    logout()
-    navigate('/')
-  }
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -111,7 +106,7 @@ export default function Profile() {
             </Link>
             <button
               type="button"
-              onClick={handleLogout}
+              onClick={logout}
               className="flex-1 flex items-center justify-center text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 py-2 px-4 rounded-lg transition-colors cursor-pointer"
             >
               Logout
