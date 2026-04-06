@@ -7,10 +7,12 @@
     "build": "bun run --filter='*' build",
     "lint": "biome check .",
     "format": "biome format --write .",
-    "check": "biome check --write ."
+    "check": "biome check --write",
+    "prepare": "lefthook install || true"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.0",
+    "lefthook": "^2.1.5",
     "typescript": "^5.7.0"
   }
 }

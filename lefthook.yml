@@ -1,0 +1,12 @@
+# EXAMPLE USAGE:
+#
+#   Refer for explanation to following link:
+#   https://lefthook.dev/configuration/
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: biome
+      run: bun run check -- --unsafe --no-errors-on-unmatched {staged_files}
+      glob: '*.{css,js,jsx,ts,tsx,md,yml,json}'
+      stage_fixed: true
