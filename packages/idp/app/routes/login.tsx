@@ -1,9 +1,11 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { data, redirect } from 'react-router'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import { useActionData, useLoaderData, useSubmit } from 'react-router'
 import { validateCredentials } from '../lib/api-client'
+import { type LoginFields, loginSchema } from '../lib/schemas'
 import { buildSessionCookie, signSession } from '../sessions.server'
 
 // ── Loader ────────────────────────────────────────────────────────────────────
@@ -41,13 +43,6 @@ export async function action({ request }: ActionFunctionArgs) {
   })
 }
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-interface LoginFields {
-  email: string
-  password: string
-}
-
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function LoginPage() {
@@ -60,7 +55,7 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFields>()
+  } = useForm<LoginFields>({ resolver: zodResolver(loginSchema) })
 
   function onValid() {
     if (formRef.current) submit(formRef.current, { method: 'post' })
@@ -129,13 +124,7 @@ export default function LoginPage() {
                       ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
                   }`}
-                  {...register('email', {
-                    required: 'Email is required',
-                    pattern: {
-                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message: 'Enter a valid email address',
-                    },
-                  })}
+                  {...register('email')}
                 />
                 {errors.email && (
                   <p className="mt-1 text-xs text-red-600">
@@ -162,9 +151,7 @@ export default function LoginPage() {
                       ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
                       : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
                   }`}
-                  {...register('password', {
-                    required: 'Password is required',
-                  })}
+                  {...register('password')}
                 />
                 {errors.password && (
                   <p className="mt-1 text-xs text-red-600">

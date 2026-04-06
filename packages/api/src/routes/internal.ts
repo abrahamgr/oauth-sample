@@ -1,27 +1,25 @@
 import type { FastifyInstance } from 'fastify'
 import { config } from '../config'
 import { findUserByEmail } from '../db'
-
-interface VerifyBody {
-  email: string
-  password: string
-}
+import { internalVerifyBodySchema } from '../schemas'
 
 export async function internalRoutes(app: FastifyInstance) {
   // POST /internal/verify — verify credentials (called server-to-server from IDP)
-  app.post<{ Body: VerifyBody }>('/internal/verify', async (request, reply) => {
+  app.post('/internal/verify', async (request, reply) => {
     const secret = request.headers['x-internal-secret']
     if (secret !== config.internalSecret) {
       return reply.status(403).send({ error: 'Forbidden' })
     }
 
-    const { email, password } = request.body
-
-    if (!email || !password) {
-      return reply
-        .status(400)
-        .send({ error: 'email and password are required' })
+    const parsed = internalVerifyBodySchema.safeParse(request.body)
+    if (!parsed.success) {
+      return reply.status(400).send({
+        error: 'invalid_request',
+        details: parsed.error.flatten().fieldErrors,
+      })
     }
+
+    const { email, password } = parsed.data
 
     const user = findUserByEmail(email)
     if (!user) {

@@ -1,0 +1,51 @@
+import { z } from 'zod'
+
+// ── Shared primitives ─────────────────────────────────────────────────────────
+
+const emailField = z
+  .string()
+  .min(1, 'Email is required')
+  .email('Invalid email address')
+const passwordField = z
+  .string()
+  .min(8, 'Password must be at least 8 characters')
+const nameField = z.string().min(2, 'Name must be at least 2 characters')
+const requiredString = z.string().min(1, 'Required')
+
+// ── Route schemas ─────────────────────────────────────────────────────────────
+
+export const authorizeQuerySchema = z.object({
+  response_type: z.literal('code'),
+  client_id: requiredString,
+  redirect_uri: z.string().url('Invalid redirect_uri'),
+  code_challenge: requiredString,
+  code_challenge_method: z.literal('S256'),
+  scope: z.string().optional().default('openid profile email'),
+  state: z.string().optional().default(''),
+})
+
+export const tokenBodySchema = z.object({
+  grant_type: z.literal('authorization_code'),
+  code: requiredString,
+  code_verifier: requiredString,
+  client_id: requiredString,
+  redirect_uri: z.string().url('Invalid redirect_uri'),
+})
+
+export const registerBodySchema = z.object({
+  email: emailField,
+  password: passwordField,
+  name: nameField,
+})
+
+export const internalVerifyBodySchema = z.object({
+  email: emailField,
+  password: z.string().min(1, 'Password is required'),
+})
+
+// ── Inferred types ────────────────────────────────────────────────────────────
+
+export type AuthorizeQuery = z.infer<typeof authorizeQuerySchema>
+export type TokenBody = z.infer<typeof tokenBodySchema>
+export type RegisterBody = z.infer<typeof registerBodySchema>
+export type InternalVerifyBody = z.infer<typeof internalVerifyBodySchema>

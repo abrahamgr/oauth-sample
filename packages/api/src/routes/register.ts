@@ -1,29 +1,26 @@
 import type { FastifyInstance } from 'fastify'
 import { config } from '../config'
 import { createUser, findUserByEmail } from '../db'
-
-interface RegisterBody {
-  email: string
-  password: string
-  name: string
-}
+import { registerBodySchema } from '../schemas'
 
 export async function registerRoutes(app: FastifyInstance) {
   // POST /register — create a new user account
   // Protected by X-Internal-Secret so it can't be called from the public internet.
-  app.post<{ Body: RegisterBody }>('/register', async (request, reply) => {
+  app.post('/register', async (request, reply) => {
     const secret = request.headers['x-internal-secret']
     if (secret !== config.internalSecret) {
       return reply.status(403).send({ error: 'Forbidden' })
     }
 
-    const { email, password, name } = request.body
-
-    if (!email || !password || !name) {
-      return reply
-        .status(400)
-        .send({ error: 'email, password, and name are required' })
+    const parsed = registerBodySchema.safeParse(request.body)
+    if (!parsed.success) {
+      return reply.status(400).send({
+        error: 'invalid_request',
+        details: parsed.error.flatten().fieldErrors,
+      })
     }
+
+    const { email, password, name } = parsed.data
 
     if (findUserByEmail(email)) {
       return reply

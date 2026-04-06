@@ -3,14 +3,7 @@ import { SignJWT } from 'jose'
 import { config } from '../config'
 import { verifyPKCE } from '../crypto'
 import { createToken, deleteCode, findCode } from '../db'
-
-interface TokenBody {
-  grant_type: string
-  code: string
-  code_verifier: string
-  client_id: string
-  redirect_uri: string
-}
+import { tokenBodySchema } from '../schemas'
 
 export async function tokenRoutes(app: FastifyInstance) {
   // POST /token — exchange an authorization code for access + refresh tokens.
@@ -18,19 +11,16 @@ export async function tokenRoutes(app: FastifyInstance) {
   // The client sends the code it received in the callback along with the
   // original code_verifier. We verify SHA-256(verifier) === stored challenge
   // (PKCE), then issue a signed JWT access token.
-  app.post<{ Body: TokenBody }>('/token', async (request, reply) => {
-    const { grant_type, code, code_verifier, client_id, redirect_uri } =
-      request.body
-
-    if (grant_type !== 'authorization_code') {
-      return reply.status(400).send({ error: 'unsupported_grant_type' })
+  app.post('/token', async (request, reply) => {
+    const parsed = tokenBodySchema.safeParse(request.body)
+    if (!parsed.success) {
+      return reply.status(400).send({
+        error: 'invalid_request',
+        details: parsed.error.flatten().fieldErrors,
+      })
     }
 
-    if (!code || !code_verifier || !client_id || !redirect_uri) {
-      return reply
-        .status(400)
-        .send({ error: 'invalid_request: missing required parameters' })
-    }
+    const { code, code_verifier, client_id, redirect_uri } = parsed.data
 
     // ── Look up the authorization code ────────────────────────────────────────
 
