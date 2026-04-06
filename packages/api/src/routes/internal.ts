@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify'
-import { config } from '../config.js'
-import { findUserByEmail } from '../db.js'
+import { config } from '../config'
+import { findUserByEmail } from '../db'
 
 interface VerifyBody {
   email: string

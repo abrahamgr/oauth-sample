@@ -1,4 +1,4 @@
-import { startLogin } from '../oauth.js'
+import { startLogin } from '../oauth'
 
 export default function Home() {
   return (

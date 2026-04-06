@@ -1,8 +1,8 @@
 import { RouterProvider, createBrowserRouter } from 'react-router'
-import Callback from './pages/Callback.js'
-import Home from './pages/Home.js'
-import Profile from './pages/Profile.js'
-import Success from './pages/Success.js'
+import Callback from './pages/Callback'
+import Home from './pages/Home'
+import Profile from './pages/Profile'
+import Success from './pages/Success'
 
 const router = createBrowserRouter([
   {

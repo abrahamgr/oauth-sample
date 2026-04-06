@@ -1,8 +1,8 @@
 import { data, redirect } from 'react-router'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import { Form, useActionData, useLoaderData } from 'react-router'
-import { validateCredentials } from '../lib/api-client.js'
-import { buildSessionCookie, signSession } from '../sessions.server.js'
+import { validateCredentials } from '../lib/api-client'
+import { buildSessionCookie, signSession } from '../sessions.server'
 
 // ── Loader ────────────────────────────────────────────────────────────────────
 

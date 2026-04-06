@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
-import { exchangeCode } from '../oauth.js'
+import { exchangeCode } from '../oauth'
 
 export default function Callback() {
   const navigate = useNavigate()

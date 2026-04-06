@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify'
-import { config } from '../config.js'
-import { createUser, findUserByEmail } from '../db.js'
+import { config } from '../config'
+import { createUser, findUserByEmail } from '../db'
 
 interface RegisterBody {
   email: string

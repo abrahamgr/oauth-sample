@@ -1,8 +1,8 @@
 import type { FastifyInstance } from 'fastify'
 import { SignJWT } from 'jose'
-import { config } from '../config.js'
-import { verifyPKCE } from '../crypto.js'
-import { createToken, deleteCode, findCode } from '../db.js'
+import { config } from '../config'
+import { verifyPKCE } from '../crypto'
+import { createToken, deleteCode, findCode } from '../db'
 
 interface TokenBody {
   grant_type: string

@@ -5,7 +5,7 @@
  * but is cleared when the browser tab closes.
  */
 
-import { generateChallenge, generateVerifier } from './pkce.js'
+import { generateChallenge, generateVerifier } from './pkce'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
 const CLIENT_ID = import.meta.env.VITE_CLIENT_ID ?? 'oauth-sample-app'

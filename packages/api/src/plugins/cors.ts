@@ -1,6 +1,6 @@
 import cors from '@fastify/cors'
 import type { FastifyInstance } from 'fastify'
-import { config } from '../config.js'
+import { config } from '../config'
 
 export async function registerCors(app: FastifyInstance) {
   await app.register(cors, {

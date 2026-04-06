@@ -1,12 +1,12 @@
 import Fastify from 'fastify'
-import { config } from './config.js'
-import { registerCookie } from './plugins/cookie.js'
-import { registerCors } from './plugins/cors.js'
-import { authorizeRoutes } from './routes/authorize.js'
-import { internalRoutes } from './routes/internal.js'
-import { registerRoutes } from './routes/register.js'
-import { tokenRoutes } from './routes/token.js'
-import { userinfoRoutes } from './routes/userinfo.js'
+import { config } from './config'
+import { registerCookie } from './plugins/cookie'
+import { registerCors } from './plugins/cors'
+import { authorizeRoutes } from './routes/authorize'
+import { internalRoutes } from './routes/internal'
+import { registerRoutes } from './routes/register'
+import { tokenRoutes } from './routes/token'
+import { userinfoRoutes } from './routes/userinfo'
 
 const app = Fastify({ logger: { level: 'info' } })
 

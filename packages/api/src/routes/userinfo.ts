@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 import { jwtVerify } from 'jose'
-import { config } from '../config.js'
-import { findUserById } from '../db.js'
+import { config } from '../config'
+import { findUserById } from '../db'
 
 export async function userinfoRoutes(app: FastifyInstance) {
   // GET /userinfo — return profile info for the authenticated user.

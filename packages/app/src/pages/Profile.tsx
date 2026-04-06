@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { type UserInfo, fetchUserInfo, isLoggedIn, logout } from '../oauth.js'
+import { type UserInfo, fetchUserInfo, isLoggedIn, logout } from '../oauth'
 
 export default function Profile() {
   const navigate = useNavigate()

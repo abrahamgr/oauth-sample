@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 import { jwtVerify } from 'jose'
-import { config, getClient } from '../config.js'
-import { createCode } from '../db.js'
+import { config, getClient } from '../config'
+import { createCode } from '../db'
 
 interface AuthorizeQuery {
   response_type: string

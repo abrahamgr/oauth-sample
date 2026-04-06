@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import { useNavigate } from 'react-router'
-import { logout } from '../oauth.js'
+import { logout } from '../oauth'
 
 export default function Success() {
   const navigate = useNavigate()
