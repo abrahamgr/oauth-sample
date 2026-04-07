@@ -25,6 +25,18 @@
       "recommended": true
     }
   },
+  "overrides": [
+    {
+      "include": ["packages/idp/app/root.tsx"],
+      "linter": {
+        "rules": {
+          "security": {
+            "noDangerouslySetInnerHtml": "off"
+          }
+        }
+      }
+    }
+  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "single",

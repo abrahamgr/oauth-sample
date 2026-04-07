@@ -1,3 +1,4 @@
+import { Button } from '@ui'
 import { Link } from 'react-router'
 import { logout } from '../oauth'
 
@@ -58,13 +59,13 @@ export default function Success() {
           >
             View Profile
           </Link>
-          <button
-            type="button"
+          <Button
+            variant="secondary"
             onClick={logout}
-            className="app-button-secondary flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold"
+            className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold"
           >
             Logout
-          </button>
+          </Button>
         </div>
       </div>
     </div>

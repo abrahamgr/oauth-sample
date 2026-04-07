@@ -21,27 +21,27 @@ export default function ConsentPage() {
   const { clientId, scope, redirectTo } = useLoaderData<typeof loader>()
 
   return (
-    <div className="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-          Authorize Access
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          <strong>{clientId}</strong> is requesting permission to:
-        </p>
-      </div>
+    <div className="page-shell page-center">
+      <div className="w-full max-w-md">
+        <div className="app-panel-strong rounded-2xl p-8">
+          <div className="mb-6 text-center">
+            <h2 className="text-2xl font-bold text-[color:var(--text)]">
+              Authorize Access
+            </h2>
+            <p className="app-muted mt-1 text-sm">
+              <strong>{clientId}</strong> is requesting permission to:
+            </p>
+          </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <ul className="mb-6 space-y-2">
             {scope.map((s) => (
               <li
                 key={s}
-                className="flex items-center gap-2 text-sm text-gray-700"
+                className="flex items-center gap-2 text-sm text-[color:var(--text)]"
               >
                 <svg
                   aria-hidden="true"
-                  className="w-4 h-4 text-green-500 flex-shrink-0"
+                  className="h-4 w-4 flex-shrink-0 text-[color:var(--success)]"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -59,13 +59,13 @@ export default function ConsentPage() {
           <div className="flex gap-3">
             <a
               href={redirectTo}
-              className="flex-1 flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              className="app-button-primary flex flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold"
             >
               Allow
             </a>
             <a
               href="http://localhost:3000"
-              className="flex-1 flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              className="app-button-secondary flex flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold"
             >
               Deny
             </a>

@@ -1,3 +1,4 @@
+import { Button } from '@ui'
 import { Link } from 'react-router'
 import { isLoggedIn, logout, startLogin } from '../oauth'
 
@@ -82,19 +83,18 @@ export default function Home() {
             >
               View Profile
             </Link>
-            <button
-              type="button"
+            <Button
+              variant="secondary"
               onClick={logout}
-              className="app-button-secondary flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold"
+              className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold"
             >
               Logout
-            </button>
+            </Button>
           </div>
         ) : (
-          <button
-            type="button"
+          <Button
             onClick={() => startLogin()}
-            className="app-button-primary flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl px-6 py-3 font-semibold"
+            className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl px-6 py-3 font-semibold"
           >
             <svg
               aria-hidden="true"
@@ -111,7 +111,7 @@ export default function Home() {
               />
             </svg>
             Login with OAuth
-          </button>
+          </Button>
         )}
       </div>
     </div>

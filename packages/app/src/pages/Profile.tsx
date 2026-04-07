@@ -1,3 +1,4 @@
+import { Button } from '@ui'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { type UserInfo, fetchUserInfo, isLoggedIn, logout } from '../oauth'
@@ -114,13 +115,12 @@ export default function Profile() {
             >
               Home
             </Link>
-            <button
-              type="button"
+            <Button
               onClick={logout}
-              className="app-button-primary flex flex-1 cursor-pointer items-center justify-center rounded-lg px-4 py-2 text-sm font-medium"
+              className="flex flex-1 cursor-pointer items-center justify-center rounded-lg px-4 py-2 text-sm font-medium"
             >
               Logout
-            </button>
+            </Button>
           </div>
         </div>
       </div>
