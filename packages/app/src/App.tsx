@@ -1,28 +1,39 @@
 import { RouterProvider, createBrowserRouter } from 'react-router'
+import AppLayout from './components/AppLayout'
 import Callback from './pages/Callback'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
 import Success from './pages/Success'
+import { ThemeProvider } from './theme'
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <Home />,
-  },
-  {
-    path: '/callback',
-    element: <Callback />,
-  },
-  {
-    path: '/success',
-    element: <Success />,
-  },
-  {
-    path: '/profile',
-    element: <Profile />,
+    element: <AppLayout />,
+    children: [
+      {
+        path: '/',
+        element: <Home />,
+      },
+      {
+        path: '/callback',
+        element: <Callback />,
+      },
+      {
+        path: '/success',
+        element: <Success />,
+      },
+      {
+        path: '/profile',
+        element: <Profile />,
+      },
+    ],
   },
 ])
 
 export default function App() {
-  return <RouterProvider router={router} />
+  return (
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  )
 }

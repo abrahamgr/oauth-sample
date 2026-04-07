@@ -5,10 +5,10 @@ export default function Home() {
   const loggedIn = isLoggedIn()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white flex flex-col items-center justify-center p-8">
-      <div className="max-w-md w-full text-center">
+    <div className="page-shell page-center">
+      <div className="w-full max-w-md text-center">
         <div className="mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-600 flex items-center justify-center mx-auto mb-4">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-500 shadow-[0_20px_45px_rgba(99,102,241,0.35)]">
             <svg
               aria-hidden="true"
               className="w-9 h-9 text-white"
@@ -24,51 +24,48 @@ export default function Home() {
               />
             </svg>
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="mb-2 text-4xl font-bold text-[color:var(--text)]">
             OAuth 2.0 Demo
           </h1>
-          <p className="text-gray-500 text-lg">
-            Authorization Code + PKCE flow
-          </p>
+          <p className="app-muted text-lg">Authorization Code + PKCE flow</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+        <div className="app-panel-strong mb-6 rounded-2xl p-8">
+          <h2 className="mb-4 text-lg font-semibold text-[color:var(--text)]">
             How it works
           </h2>
-          <ol className="text-left text-sm text-gray-600 space-y-3">
+          <ol className="app-muted space-y-3 text-left text-sm">
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-semibold text-xs">
+              <span className="app-step flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                 1
               </span>
               App generates a PKCE{' '}
-              <code className="bg-gray-100 px-1 rounded">code_verifier</code>{' '}
-              &amp;{' '}
-              <code className="bg-gray-100 px-1 rounded">code_challenge</code>
+              <code className="app-code">code_verifier</code> &amp;{' '}
+              <code className="app-code">code_challenge</code>
             </li>
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-semibold text-xs">
+              <span className="app-step flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                 2
               </span>
               Browser redirects to the Authorization Server (
-              <code className="bg-gray-100 px-1 rounded">:3001/authorize</code>)
+              <code className="app-code">:3001/authorize</code>)
             </li>
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-semibold text-xs">
+              <span className="app-step flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                 3
               </span>
               Auth server redirects to the Identity Provider (
-              <code className="bg-gray-100 px-1 rounded">:3002/login</code>)
+              <code className="app-code">:3002/login</code>)
             </li>
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-semibold text-xs">
+              <span className="app-step flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                 4
               </span>
               After login, auth server issues a <strong>code</strong> and
               redirects back
             </li>
             <li className="flex gap-3">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-semibold text-xs">
+              <span className="app-step flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                 5
               </span>
               App exchanges code + verifier for a{' '}
@@ -81,14 +78,14 @@ export default function Home() {
           <div className="flex gap-3">
             <Link
               to="/profile"
-              className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow transition-colors"
+              className="app-button-primary flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold"
             >
               View Profile
             </Link>
             <button
               type="button"
               onClick={logout}
-              className="flex-1 flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-xl shadow-sm border border-gray-200 transition-colors cursor-pointer"
+              className="app-button-secondary flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold"
             >
               Logout
             </button>
@@ -97,7 +94,7 @@ export default function Home() {
           <button
             type="button"
             onClick={() => startLogin()}
-            className="w-full flex items-center justify-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow transition-colors cursor-pointer"
+            className="app-button-primary flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl px-6 py-3 font-semibold"
           >
             <svg
               aria-hidden="true"

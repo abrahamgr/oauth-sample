@@ -33,12 +33,12 @@ export default function Callback() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-red-100 p-8 text-center">
-          <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+      <div className="page-shell page-center">
+        <div className="app-panel-strong w-full max-w-md rounded-2xl p-8 text-center">
+          <div className="app-danger mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full">
             <svg
               aria-hidden="true"
-              className="w-7 h-7 text-red-600"
+              className="h-7 w-7"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -51,14 +51,11 @@ export default function Callback() {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          <h2 className="mb-2 text-xl font-semibold text-[color:var(--text)]">
             Authentication failed
           </h2>
-          <p className="text-sm text-gray-500 mb-6">{error}</p>
-          <a
-            href="/"
-            className="text-indigo-600 hover:text-indigo-500 font-medium text-sm"
-          >
+          <p className="mb-6 text-sm text-[color:var(--danger)]">{error}</p>
+          <a href="/" className="app-link text-sm font-medium">
             Try again
           </a>
         </div>
@@ -67,10 +64,10 @@ export default function Callback() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="page-shell page-center">
       <div className="text-center">
-        <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-gray-500">Exchanging authorization code…</p>
+        <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-[color:var(--border)] border-t-indigo-400" />
+        <p className="app-muted">Exchanging authorization code…</p>
       </div>
     </div>
   )

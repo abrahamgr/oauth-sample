@@ -3,12 +3,12 @@ import { logout } from '../oauth'
 
 export default function Success() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-white flex items-center justify-center p-8">
-      <div className="max-w-md w-full text-center">
-        <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
+    <div className="page-shell page-center">
+      <div className="w-full max-w-md text-center">
+        <div className="app-success mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full">
           <svg
             aria-hidden="true"
-            className="w-9 h-9 text-green-600"
+            className="h-9 w-9 text-[color:var(--success)]"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -22,33 +22,30 @@ export default function Success() {
           </svg>
         </div>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="mb-2 text-3xl font-bold text-[color:var(--text)]">
           You're logged in!
         </h1>
-        <p className="text-gray-500 mb-8">
+        <p className="app-muted mb-8">
           The OAuth 2.0 Authorization Code + PKCE flow completed successfully.
           Your access token is stored in{' '}
-          <code className="bg-gray-100 px-1 rounded text-sm">
-            sessionStorage
-          </code>
-          .
+          <code className="app-code">sessionStorage</code>.
         </p>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6 text-left">
-          <h3 className="font-semibold text-gray-800 mb-3">
+        <div className="app-panel-strong mb-6 rounded-2xl p-6 text-left">
+          <h3 className="mb-3 font-semibold text-[color:var(--text)]">
             What just happened?
           </h3>
-          <ul className="text-sm text-gray-600 space-y-2">
+          <ul className="app-muted space-y-2 text-sm">
             <li className="flex gap-2">
-              <span className="text-green-500 mt-0.5">✓</span>
+              <span className="mt-0.5 text-[color:var(--success)]">✓</span>
               Auth server verified your PKCE code challenge
             </li>
             <li className="flex gap-2">
-              <span className="text-green-500 mt-0.5">✓</span>
+              <span className="mt-0.5 text-[color:var(--success)]">✓</span>
               Authorization code exchanged for a JWT access token
             </li>
             <li className="flex gap-2">
-              <span className="text-green-500 mt-0.5">✓</span>
+              <span className="mt-0.5 text-[color:var(--success)]">✓</span>
               Refresh token stored for later use
             </li>
           </ul>
@@ -57,14 +54,14 @@ export default function Success() {
         <div className="flex gap-3">
           <Link
             to="/profile"
-            className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-xl shadow transition-colors"
+            className="app-button-primary flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold"
           >
             View Profile
           </Link>
           <button
             type="button"
             onClick={logout}
-            className="flex-1 flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-xl shadow-sm border border-gray-200 transition-colors cursor-pointer"
+            className="app-button-secondary flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold"
           >
             Logout
           </button>
