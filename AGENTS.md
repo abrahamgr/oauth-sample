@@ -22,8 +22,14 @@ bun run --filter=api dev
 bun run --filter=idp dev
 bun run --filter=app dev
 
-# Push Drizzle schema to SQLite (api package only)
+# Push Drizzle schema to SQLite (api package only, no migration history)
 cd packages/api && bun run db:push
+
+# Run tracked Drizzle migrations (api package only)
+cd packages/api && bun run db:migrate
+
+# Start Mailpit SMTP server (required for password reset emails)
+docker compose up -d
 ```
 
 No test suite exists yet. There are no test commands.
@@ -67,10 +73,15 @@ Logout: `app/src/oauth.ts:logout()` clears `sessionStorage` then redirects to `i
 ### API Package (`packages/api`)
 
 - `src/config.ts` — env vars + static OAuth client registry (`registeredClients`)
-- `src/db/schema.ts` — Drizzle table definitions (`users`, `oauthCodes`, `oauthTokens`)
+- `src/config.ts` — env vars (including SMTP config) + static OAuth client registry
+- `src/db/schema.ts` — Drizzle table definitions (`users`, `oauthCodes`, `oauthTokens`, `passwordResetTokens`)
 - `src/db/index.ts` — Drizzle client (bun:sqlite) + all query helper functions
 - `src/schemas.ts` — Zod schemas for all route inputs; import from here for validation
 - `src/crypto.ts` — `verifyPKCE(verifier, challenge)` using `Bun.CryptoHasher`
+- `src/email.ts` — Nodemailer transport + `sendPasswordResetEmail(to, token)`
+- `src/emails/password-reset.ts` — HTML email template for password reset
+- `src/routes/password-reset.ts` — `POST /password-reset/request` (sends email) and `POST /password-reset/confirm` (validates token, updates password)
+- `drizzle/` — tracked migration SQL files; apply with `db:migrate`
 - Routes are protected by `X-Internal-Secret` header for `/register` and `/internal/*`
 
 ### IDP Package (`packages/idp`)
@@ -78,7 +89,9 @@ Logout: `app/src/oauth.ts:logout()` clears `sessionStorage` then redirects to `i
 - Framework mode React Router v7 (SSR). Routes are defined in `app/routes.ts`.
 - `app/sessions.server.ts` — `signSession(userId)` / `buildSessionCookie(token)` — signs the `idp_session` JWT
 - `app/lib/api-client.ts` — server-side fetch wrapper to `packages/api` with `X-Internal-Secret`
-- `app/lib/schemas.ts` — Zod schemas (`loginSchema`, `registerSchema`) shared between server actions and react-hook-form
+- `app/lib/schemas.ts` — Zod schemas (`loginSchema`, `registerSchema`, `forgotPasswordSchema`, `resetPasswordSchema`) shared between server actions and react-hook-form
+- `app/routes/forgot-password.tsx` — email submission form; calls `POST /password-reset/request`
+- `app/routes/reset-password.tsx` — new password form; calls `POST /password-reset/confirm` with token from URL query param
 - Forms use react-hook-form with `zodResolver` for client-side validation. Form submission uses `useSubmit(formRef.current, { method: 'post' })` (submits the actual DOM form element, not a plain object) so React Router's action receives proper `FormData`.
 
 ### App Package (`packages/app`)

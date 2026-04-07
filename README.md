@@ -19,16 +19,18 @@ A hands-on implementation of the **Authorization Code + PKCE** flow built from s
 - **App**: Vite, React Router v7 (SPA mode)
 - **UI**: Shared component library (`@ui`) — AppHeader, AppShell, form components, theme system
 - **Styling**: Tailwind CSS v4
+- **Email**: Nodemailer + Mailpit (Docker — SMTP testing UI at localhost:8025)
 - **Linting/Formatting**: BiomeJS
 
 ## Getting Started
 
 ```bash
 bun install
+docker compose up -d  # start Mailpit (needed for password reset emails)
 bun run dev
 ```
 
-Then open [http://localhost:3000](http://localhost:3000).
+Then open [http://localhost:3000](http://localhost:3000). Password reset emails can be inspected at [http://localhost:8025](http://localhost:8025) (Mailpit UI).
 
 ## The Flow
 
@@ -90,28 +92,35 @@ After the user logs in on the IDP, it sets an `idp_session` cookie containing a 
 ```
 packages/
 ├── api/
+│   ├── drizzle/               # tracked migration SQL files
 │   └── src/
-│       ├── config.ts          # env vars, registered OAuth clients
+│       ├── config.ts          # env vars (incl. SMTP), registered OAuth clients
 │       ├── schemas.ts         # Zod validation schemas for all routes
 │       ├── crypto.ts          # PKCE verification (Bun.CryptoHasher)
+│       ├── email.ts           # Nodemailer transport + sendPasswordResetEmail()
 │       ├── db/
-│       │   ├── schema.ts      # Drizzle table definitions
+│       │   ├── schema.ts      # Drizzle table definitions (incl. passwordResetTokens)
 │       │   └── index.ts       # query helpers (createUser, findCode, …)
+│       ├── emails/
+│       │   └── password-reset.ts  # HTML email template
 │       └── routes/
-│           ├── authorize.ts   # GET /authorize
-│           ├── token.ts       # POST /token
-│           ├── userinfo.ts    # GET /userinfo
-│           ├── register.ts    # POST /register (internal)
-│           └── internal.ts    # POST /internal/verify (internal)
+│           ├── authorize.ts       # GET /authorize
+│           ├── token.ts           # POST /token
+│           ├── userinfo.ts        # GET /userinfo
+│           ├── register.ts        # POST /register (internal)
+│           ├── internal.ts        # POST /internal/verify (internal)
+│           └── password-reset.ts  # POST /password-reset/request + /confirm
 ├── idp/
 │   └── app/
 │       ├── sessions.server.ts # sign/build idp_session cookie
 │       ├── lib/
 │       │   ├── api-client.ts  # server-to-server calls to packages/api
-│       │   └── schemas.ts     # Zod schemas for login/register forms
+│       │   └── schemas.ts     # Zod schemas for login/register/password-reset forms
 │       └── routes/
 │           ├── login.tsx
 │           ├── register.tsx
+│           ├── forgot-password.tsx  # email submission form
+│           ├── reset-password.tsx   # new password form (token from query param)
 │           └── logout.ts      # clears idp_session cookie
 ├── app/
 │   └── src/
@@ -145,6 +154,9 @@ All variables have working defaults for local development — no `.env` file is 
 | `INTERNAL_SECRET` | `internal-api-secret` | Guards `/register` and `/internal/*` |
 | `IDP_URL` | `http://localhost:3002` | Where to redirect unauthenticated users |
 | `APP_URL` | `http://localhost:3000` | Allowed CORS origin |
+| `SMTP_HOST` | `localhost` | Mailpit SMTP host |
+| `SMTP_PORT` | `1025` | Mailpit SMTP port |
+| `SMTP_FROM` | `noreply@oauth-sample.local` | From address for password reset emails |
 
 **`packages/idp`**
 | Variable | Default | Description |
