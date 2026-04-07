@@ -2,15 +2,32 @@ import type { FastifyInstance } from 'fastify'
 import { SignJWT } from 'jose'
 import { config } from '../config'
 import { verifyPKCE } from '../crypto'
-import { createToken, deleteCode, findCode } from '../db'
+import {
+  createToken,
+  deleteCode,
+  deleteToken,
+  findCode,
+  findTokenByRefreshToken,
+} from '../db'
 import { tokenBodySchema } from '../schemas'
 
+const ACCESS_TOKEN_TTL_S = 3600 // 1 hour
+const REFRESH_TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000 // 30 days
+
+async function signAccessToken(userId: string, scope: string): Promise<string> {
+  const secret = new TextEncoder().encode(config.jwtSecret)
+  return new SignJWT({ scope })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setSubject(userId)
+    .setIssuer('oauth-sample-api')
+    .setAudience('oauth-sample-app')
+    .setIssuedAt()
+    .setExpirationTime(`${ACCESS_TOKEN_TTL_S}s`)
+    .sign(secret)
+}
+
 export async function tokenRoutes(app: FastifyInstance) {
-  // POST /token — exchange an authorization code for access + refresh tokens.
-  //
-  // The client sends the code it received in the callback along with the
-  // original code_verifier. We verify SHA-256(verifier) === stored challenge
-  // (PKCE), then issue a signed JWT access token.
+  // POST /token — exchange an authorization code or refresh token for tokens.
   app.post('/token', async (request, reply) => {
     const parsed = tokenBodySchema.safeParse(request.body)
     if (!parsed.success) {
@@ -20,7 +37,63 @@ export async function tokenRoutes(app: FastifyInstance) {
       })
     }
 
-    const { code, code_verifier, client_id, redirect_uri } = parsed.data
+    const data = parsed.data
+
+    // ── Refresh token grant ───────────────────────────────────────────────────
+
+    if (data.grant_type === 'refresh_token') {
+      const { refresh_token, client_id } = data
+
+      const storedToken = findTokenByRefreshToken(refresh_token)
+      if (!storedToken) {
+        return reply
+          .status(400)
+          .send({ error: 'invalid_grant: refresh token not found' })
+      }
+
+      if (storedToken.expires_at < Date.now()) {
+        deleteToken(refresh_token)
+        return reply
+          .status(400)
+          .send({ error: 'invalid_grant: refresh token expired' })
+      }
+
+      if (storedToken.client_id !== client_id) {
+        return reply
+          .status(400)
+          .send({ error: 'invalid_grant: client_id mismatch' })
+      }
+
+      // Token rotation — delete old record before issuing new one
+      deleteToken(refresh_token)
+
+      const accessToken = await signAccessToken(
+        storedToken.user_id,
+        storedToken.scope,
+      )
+      const newRefreshToken = crypto.randomUUID()
+
+      createToken({
+        access_token: accessToken,
+        refresh_token: newRefreshToken,
+        user_id: storedToken.user_id,
+        client_id,
+        scope: storedToken.scope,
+        expires_at: Date.now() + REFRESH_TOKEN_TTL_MS,
+      })
+
+      return reply.header('Cache-Control', 'no-store').send({
+        access_token: accessToken,
+        token_type: 'Bearer',
+        expires_in: ACCESS_TOKEN_TTL_S,
+        refresh_token: newRefreshToken,
+        scope: storedToken.scope,
+      })
+    }
+
+    // ── Authorization code grant ──────────────────────────────────────────────
+
+    const { code, code_verifier, client_id, redirect_uri } = data
 
     // ── Look up the authorization code ────────────────────────────────────────
 
@@ -60,20 +133,11 @@ export async function tokenRoutes(app: FastifyInstance) {
 
     // ── Issue JWT access token ────────────────────────────────────────────────
 
-    const secret = new TextEncoder().encode(config.jwtSecret)
-    const expiresInSeconds = 3600 // 1 hour
-
-    const accessToken = await new SignJWT({ scope: storedCode.scope })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setSubject(storedCode.user_id)
-      .setIssuer('oauth-sample-api')
-      .setAudience('oauth-sample-app')
-      .setIssuedAt()
-      .setExpirationTime(`${expiresInSeconds}s`)
-      .sign(secret)
-
+    const accessToken = await signAccessToken(
+      storedCode.user_id,
+      storedCode.scope,
+    )
     const refreshToken = crypto.randomUUID()
-    const tokenExpiresAt = Date.now() + expiresInSeconds * 1000
 
     createToken({
       access_token: accessToken,
@@ -81,13 +145,13 @@ export async function tokenRoutes(app: FastifyInstance) {
       user_id: storedCode.user_id,
       client_id,
       scope: storedCode.scope,
-      expires_at: tokenExpiresAt,
+      expires_at: Date.now() + REFRESH_TOKEN_TTL_MS,
     })
 
     return reply.header('Cache-Control', 'no-store').send({
       access_token: accessToken,
       token_type: 'Bearer',
-      expires_in: expiresInSeconds,
+      expires_in: ACCESS_TOKEN_TTL_S,
       refresh_token: refreshToken,
       scope: storedCode.scope,
     })

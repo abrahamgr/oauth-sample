@@ -1,6 +1,7 @@
 import { Database } from 'bun:sqlite'
-import { eq } from 'drizzle-orm'
+import { eq, lt } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/bun-sqlite'
+import { migrate } from 'drizzle-orm/bun-sqlite/migrator'
 import * as schema from './schema'
 
 // ── Client ────────────────────────────────────────────────────────────────────
@@ -10,6 +11,7 @@ sqlite.run('PRAGMA journal_mode = WAL')
 sqlite.run('PRAGMA foreign_keys = ON')
 
 const db = drizzle(sqlite, { schema })
+migrate(db, { migrationsFolder: './drizzle' })
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -66,4 +68,36 @@ export function createToken(
   token: Omit<typeof schema.oauthTokens.$inferInsert, 'created_at'>,
 ): void {
   db.insert(schema.oauthTokens).values(token).run()
+}
+
+export function findTokenByRefreshToken(
+  refreshToken: string,
+): OAuthToken | null {
+  return (
+    db
+      .select()
+      .from(schema.oauthTokens)
+      .where(eq(schema.oauthTokens.refresh_token, refreshToken))
+      .get() ?? null
+  )
+}
+
+export function deleteToken(refreshToken: string): void {
+  db.delete(schema.oauthTokens)
+    .where(eq(schema.oauthTokens.refresh_token, refreshToken))
+    .run()
+}
+
+// ── Cleanup queries ───────────────────────────────────────────────────────────
+
+export function deleteExpiredCodes(): void {
+  db.delete(schema.oauthCodes)
+    .where(lt(schema.oauthCodes.expires_at, Date.now()))
+    .run()
+}
+
+export function deleteExpiredTokens(): void {
+  db.delete(schema.oauthTokens)
+    .where(lt(schema.oauthTokens.expires_at, Date.now()))
+    .run()
 }

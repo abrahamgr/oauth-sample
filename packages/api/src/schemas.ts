@@ -24,13 +24,24 @@ export const authorizeQuerySchema = z.object({
   state: z.string().optional().default(''),
 })
 
-export const tokenBodySchema = z.object({
+const authCodeBodySchema = z.object({
   grant_type: z.literal('authorization_code'),
   code: requiredString,
   code_verifier: requiredString,
   client_id: requiredString,
   redirect_uri: z.string().url('Invalid redirect_uri'),
 })
+
+const refreshTokenBodySchema = z.object({
+  grant_type: z.literal('refresh_token'),
+  refresh_token: requiredString,
+  client_id: requiredString,
+})
+
+export const tokenBodySchema = z.discriminatedUnion('grant_type', [
+  authCodeBodySchema,
+  refreshTokenBodySchema,
+])
 
 export const registerBodySchema = z.object({
   email: emailField,
