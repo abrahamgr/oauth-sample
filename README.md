@@ -9,6 +9,7 @@ A hands-on implementation of the **Authorization Code + PKCE** flow built from s
 | **app** | 3000 | Vite + React SPA — the OAuth client (relying party) |
 | **api** | 3001 | Fastify — OAuth Authorization Server (token issuance) |
 | **idp** | 3002 | React Router v7 SSR — Identity Provider (login/register UI) |
+| **ui** | — | Shared component library (components, theme, CSS) |
 
 ## Stack
 
@@ -16,6 +17,7 @@ A hands-on implementation of the **Authorization Code + PKCE** flow built from s
 - **API**: Fastify, SQLite via Drizzle ORM
 - **IDP**: React Router v7 (SSR framework mode), react-hook-form + Zod
 - **App**: Vite, React Router v7 (SPA mode)
+- **UI**: Shared component library (`@ui`) — AppHeader, AppShell, form components, theme system
 - **Styling**: Tailwind CSS v4
 - **Linting/Formatting**: BiomeJS
 
@@ -111,15 +113,23 @@ packages/
 │           ├── login.tsx
 │           ├── register.tsx
 │           └── logout.ts      # clears idp_session cookie
-└── app/
+├── app/
+│   └── src/
+│       ├── pkce.ts            # generateVerifier / generateChallenge
+│       ├── oauth.ts           # startLogin, exchangeCode, fetchUserInfo, logout
+│       └── pages/
+│           ├── Home.tsx
+│           ├── Callback.tsx
+│           ├── Success.tsx
+│           └── Profile.tsx
+└── ui/
     └── src/
-        ├── pkce.ts            # generateVerifier / generateChallenge
-        ├── oauth.ts           # startLogin, exchangeCode, fetchUserInfo, logout
-        └── pages/
-            ├── Home.tsx
-            ├── Callback.tsx
-            ├── Success.tsx
-            └── Profile.tsx
+        ├── index.ts           # package entry — exports all components + theme
+        ├── index.css          # CSS custom properties, base & component styles
+        ├── theme.tsx          # ThemeProvider + useTheme (light / dark / system)
+        ├── components/        # AppHeader, Button, Input, Label, FormField
+        └── layout/
+            └── AppShell.tsx   # root layout wrapper
 ```
 
 ## Environment Variables
