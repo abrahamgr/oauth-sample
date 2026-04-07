@@ -35,3 +35,15 @@ export const oauthTokens = sqliteTable('oauth_tokens', {
     .notNull()
     .$defaultFn(() => Math.floor(Date.now() / 1000)),
 })
+
+export const passwordResetTokens = sqliteTable('password_reset_tokens', {
+  token: text('token').primaryKey(),
+  user_id: text('user_id')
+    .notNull()
+    .references(() => users.id),
+  expires_at: integer('expires_at').notNull(),
+  used_at: integer('used_at'),
+  created_at: integer('created_at')
+    .notNull()
+    .$defaultFn(() => Math.floor(Date.now() / 1000)),
+})

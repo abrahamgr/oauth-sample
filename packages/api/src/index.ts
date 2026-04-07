@@ -1,10 +1,15 @@
 import Fastify from 'fastify'
 import { config } from './config'
-import { deleteExpiredCodes, deleteExpiredTokens } from './db'
+import {
+  deleteExpiredCodes,
+  deleteExpiredResetTokens,
+  deleteExpiredTokens,
+} from './db'
 import { registerCookie } from './plugins/cookie'
 import { registerCors } from './plugins/cors'
 import { authorizeRoutes } from './routes/authorize'
 import { internalRoutes } from './routes/internal'
+import { passwordResetRoutes } from './routes/password-reset'
 import { registerRoutes } from './routes/register'
 import { tokenRoutes } from './routes/token'
 import { userinfoRoutes } from './routes/userinfo'
@@ -23,6 +28,7 @@ await app.register(tokenRoutes)
 await app.register(userinfoRoutes)
 await app.register(registerRoutes)
 await app.register(internalRoutes)
+await app.register(passwordResetRoutes)
 
 // ── Cleanup ───────────────────────────────────────────────────────────────────
 
@@ -30,6 +36,7 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000
 setInterval(() => {
   deleteExpiredCodes()
   deleteExpiredTokens()
+  deleteExpiredResetTokens()
 }, ONE_DAY_MS)
 
 // ── Start ─────────────────────────────────────────────────────────────────────

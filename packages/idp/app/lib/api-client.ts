@@ -56,3 +56,35 @@ export async function registerUser(
 
   return res.json() as Promise<UserResult>
 }
+
+/**
+ * Request a password reset email for the given address.
+ * Always resolves — the API never reveals whether the email exists.
+ */
+export async function requestPasswordReset(email: string): Promise<void> {
+  await fetch(`${API_URL}/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  })
+}
+
+/**
+ * Reset the user's password using a token from the reset email.
+ * Throws if the token is invalid, expired, or already used.
+ */
+export async function resetPassword(
+  token: string,
+  password: string,
+): Promise<void> {
+  const res = await fetch(`${API_URL}/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, password }),
+  })
+
+  if (!res.ok) {
+    const body = (await res.json()) as { error: string }
+    throw new Error(body.error ?? 'Reset failed')
+  }
+}

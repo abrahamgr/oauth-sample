@@ -18,6 +18,7 @@ migrate(db, { migrationsFolder: './drizzle' })
 export type User = typeof schema.users.$inferSelect
 export type OAuthCode = typeof schema.oauthCodes.$inferSelect
 export type OAuthToken = typeof schema.oauthTokens.$inferSelect
+export type PasswordResetToken = typeof schema.passwordResetTokens.$inferSelect
 
 // ── User queries ──────────────────────────────────────────────────────────────
 
@@ -38,6 +39,13 @@ export function findUserById(id: string): User | null {
   return (
     db.select().from(schema.users).where(eq(schema.users.id, id)).get() ?? null
   )
+}
+
+export function updateUserPassword(id: string, passwordHash: string): void {
+  db.update(schema.users)
+    .set({ password_hash: passwordHash })
+    .where(eq(schema.users.id, id))
+    .run()
 }
 
 // ── Auth code queries ─────────────────────────────────────────────────────────
@@ -88,6 +96,35 @@ export function deleteToken(refreshToken: string): void {
     .run()
 }
 
+// ── Password reset token queries ──────────────────────────────────────────────
+
+export function createResetToken(
+  token: string,
+  userId: string,
+  expiresAt: number,
+): void {
+  db.insert(schema.passwordResetTokens)
+    .values({ token, user_id: userId, expires_at: expiresAt })
+    .run()
+}
+
+export function findResetToken(token: string): PasswordResetToken | null {
+  return (
+    db
+      .select()
+      .from(schema.passwordResetTokens)
+      .where(eq(schema.passwordResetTokens.token, token))
+      .get() ?? null
+  )
+}
+
+export function markResetTokenUsed(token: string): void {
+  db.update(schema.passwordResetTokens)
+    .set({ used_at: Math.floor(Date.now() / 1000) })
+    .where(eq(schema.passwordResetTokens.token, token))
+    .run()
+}
+
 // ── Cleanup queries ───────────────────────────────────────────────────────────
 
 export function deleteExpiredCodes(): void {
@@ -99,5 +136,17 @@ export function deleteExpiredCodes(): void {
 export function deleteExpiredTokens(): void {
   db.delete(schema.oauthTokens)
     .where(lt(schema.oauthTokens.expires_at, Date.now()))
+    .run()
+}
+
+export function deleteUserTokens(userId: string): void {
+  db.delete(schema.oauthTokens)
+    .where(eq(schema.oauthTokens.user_id, userId))
+    .run()
+}
+
+export function deleteExpiredResetTokens(): void {
+  db.delete(schema.passwordResetTokens)
+    .where(lt(schema.passwordResetTokens.expires_at, Date.now()))
     .run()
 }

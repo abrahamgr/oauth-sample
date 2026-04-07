@@ -54,9 +54,18 @@ export const internalVerifyBodySchema = z.object({
   password: z.string().min(1, 'Password is required'),
 })
 
+export const forgotPasswordSchema = z.object({ email: emailField })
+
+export const resetPasswordSchema = z.object({
+  token: requiredString,
+  password: passwordField,
+})
+
 // ── Inferred types ────────────────────────────────────────────────────────────
 
 export type AuthorizeQuery = z.infer<typeof authorizeQuerySchema>
 export type TokenBody = z.infer<typeof tokenBodySchema>
 export type RegisterBody = z.infer<typeof registerBodySchema>
 export type InternalVerifyBody = z.infer<typeof internalVerifyBodySchema>
+export type ForgotPasswordBody = z.infer<typeof forgotPasswordSchema>
+export type ResetPasswordBody = z.infer<typeof resetPasswordSchema>

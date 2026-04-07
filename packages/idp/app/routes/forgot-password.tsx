@@ -2,20 +2,18 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, FormField, Input } from '@ui'
 import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link, data, redirect } from 'react-router'
+import { Link, data } from 'react-router'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import { useActionData, useLoaderData, useSubmit } from 'react-router'
-import { validateCredentials } from '../lib/api-client'
-import { type LoginFields, loginSchema } from '../lib/schemas'
-import { buildSessionCookie, signSession } from '../sessions.server'
+import { requestPasswordReset } from '../lib/api-client'
+import { type ForgotPasswordFields, forgotPasswordSchema } from '../lib/schemas'
 
 // ── Loader ────────────────────────────────────────────────────────────────────
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
-  const redirectTo = url.searchParams.get('redirect') ?? ''
-  const message = url.searchParams.get('message') ?? ''
-  return { redirectTo, message }
+  const email = url.searchParams.get('email') ?? ''
+  return { email }
 }
 
 // ── Action ────────────────────────────────────────────────────────────────────
@@ -23,32 +21,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export async function action({ request }: ActionFunctionArgs) {
   const form = await request.formData()
   const email = form.get('email') as string
-  const password = form.get('password') as string
-  const redirectTo = form.get('redirect') as string
 
-  const user = await validateCredentials(email, password)
+  await requestPasswordReset(email)
 
-  if (!user) {
-    return data(
-      { error: 'Invalid email or password.', redirectTo },
-      { status: 401 },
-    )
-  }
-
-  // Sign a short-lived session JWT and set it as an HttpOnly cookie.
-  // The API's /authorize route will verify this same cookie.
-  const sessionToken = await signSession(user.id)
-  const cookie = buildSessionCookie(sessionToken)
-
-  return redirect(redirectTo || 'http://localhost:3000', {
-    headers: { 'Set-Cookie': cookie },
-  })
+  return data({ sent: true })
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function LoginPage() {
-  const { redirectTo, message } = useLoaderData<typeof loader>()
+export default function ForgotPasswordPage() {
+  const { email: defaultEmail } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
   const submit = useSubmit()
   const formRef = useRef<HTMLFormElement>(null)
@@ -57,10 +39,50 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFields>({ resolver: zodResolver(loginSchema) })
+  } = useForm<ForgotPasswordFields>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: { email: defaultEmail },
+  })
 
   function onValid() {
     if (formRef.current) submit(formRef.current, { method: 'post' })
+  }
+
+  if (actionData && 'sent' in actionData) {
+    return (
+      <div className="page-shell page-center">
+        <div className="w-full max-w-md">
+          <div className="app-panel-strong rounded-2xl p-8 text-center">
+            <div className="app-success mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+              <svg
+                aria-hidden="true"
+                className="h-7 w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+            <h2 className="mb-2 text-xl font-bold text-[color:var(--text)]">
+              Check your email
+            </h2>
+            <p className="app-muted mb-6 text-sm leading-relaxed">
+              If that address is registered, you'll receive a reset link
+              shortly. The link expires in 15 minutes.
+            </p>
+            <Link to="/login" className="app-link text-sm font-medium">
+              Back to sign in
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -69,10 +91,10 @@ export default function LoginPage() {
         <div className="app-panel-strong rounded-2xl p-8">
           <div className="mb-8 text-center">
             <h2 className="text-2xl font-bold text-[color:var(--text)]">
-              Sign in
+              Forgot password?
             </h2>
             <p className="app-muted mt-1 text-sm">
-              Identity Provider — OAuth 2.0 Demo
+              Enter your email and we'll send a reset link.
             </p>
           </div>
 
@@ -83,22 +105,6 @@ export default function LoginPage() {
             className="space-y-5"
             noValidate
           >
-            <input type="hidden" name="redirect" value={redirectTo} />
-
-            {message === 'password-reset' && (
-              <div className="app-success rounded-lg p-3">
-                <p className="text-sm">
-                  Password updated. Sign in with your new password.
-                </p>
-              </div>
-            )}
-
-            {actionData && 'error' in actionData && (
-              <div className="app-danger rounded-lg p-3">
-                <p className="text-sm">{actionData.error}</p>
-              </div>
-            )}
-
             <FormField
               label="Email address"
               htmlFor="email"
@@ -114,39 +120,17 @@ export default function LoginPage() {
               />
             </FormField>
 
-            <FormField
-              label="Password"
-              htmlFor="password"
-              error={errors.password?.message}
-            >
-              <Input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                error={!!errors.password}
-                {...register('password')}
-              />
-              <div className="mt-1 text-right">
-                <Link to="/forgot-password" className="app-link text-sm">
-                  Forgot password?
-                </Link>
-              </div>
-            </FormField>
-
             <Button
               type="submit"
               className="mt-2 flex w-full cursor-pointer justify-center rounded-xl px-4 py-2.5 text-sm font-semibold"
             >
-              Sign in
+              Send reset link
             </Button>
 
             <p className="text-center text-sm text-[color:var(--text-muted)]">
-              No account?{' '}
-              <Link
-                to={`/register?redirect=${encodeURIComponent(redirectTo)}`}
-                className="app-link font-medium"
-              >
-                Create one
+              Remembered it?{' '}
+              <Link to="/login" className="app-link font-medium">
+                Sign in
               </Link>
             </p>
           </form>

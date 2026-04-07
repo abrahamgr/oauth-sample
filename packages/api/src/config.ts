@@ -12,6 +12,11 @@ export const config = {
   internalSecret: process.env.INTERNAL_SECRET ?? 'internal-api-secret',
   idpUrl: process.env.IDP_URL ?? 'http://localhost:3002',
   appUrl: process.env.APP_URL ?? 'http://localhost:3000',
+  smtp: {
+    host: process.env.SMTP_HOST ?? 'localhost',
+    port: Number(process.env.SMTP_PORT ?? 1025),
+    from: process.env.SMTP_FROM ?? 'noreply@oauth-sample.local',
+  },
 }
 
 // Registered OAuth clients. In a real auth server this lives in the database.
