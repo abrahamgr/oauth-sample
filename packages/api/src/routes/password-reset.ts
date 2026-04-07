@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify'
+import { config } from '../config'
 import {
   createResetToken,
   deleteUserTokens,
@@ -18,6 +19,11 @@ export async function passwordResetRoutes(app: FastifyInstance) {
   // Always returns 200 regardless of whether the email exists to prevent
   // user enumeration attacks.
   app.post('/forgot-password', async (request, reply) => {
+    const secret = request.headers['x-internal-secret']
+    if (secret !== config.internalSecret) {
+      return reply.status(403).send({ error: 'Forbidden' })
+    }
+
     const parsed = forgotPasswordSchema.safeParse(request.body)
     if (!parsed.success) {
       return reply.status(400).send({
@@ -46,6 +52,11 @@ export async function passwordResetRoutes(app: FastifyInstance) {
 
   // POST /reset-password — set a new password using a valid reset token.
   app.post('/reset-password', async (request, reply) => {
+    const secret = request.headers['x-internal-secret']
+    if (secret !== config.internalSecret) {
+      return reply.status(403).send({ error: 'Forbidden' })
+    }
+
     const parsed = resetPasswordSchema.safeParse(request.body)
     if (!parsed.success) {
       return reply.status(400).send({

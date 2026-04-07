@@ -64,7 +64,7 @@ export async function registerUser(
 export async function requestPasswordReset(email: string): Promise<void> {
   await fetch(`${API_URL}/forgot-password`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: internalHeaders,
     body: JSON.stringify({ email }),
   })
 }
@@ -79,7 +79,7 @@ export async function resetPassword(
 ): Promise<void> {
   const res = await fetch(`${API_URL}/reset-password`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: internalHeaders,
     body: JSON.stringify({ token, password }),
   })
 
