@@ -32,6 +32,8 @@ No test suite exists yet. There are no test commands.
 
 BiomeJS enforces: single quotes, double quotes in JSX attributes, no semicolons, trailing commas, 2-space indent. Running `bun run check` auto-fixes formatting. Do not add `.js` extensions to relative imports — all packages use `moduleResolution: bundler` and Bun/Vite resolve TypeScript natively.
 
+Consumer packages (`app`, `idp`) must include a `@source` directive in their CSS entry point so Tailwind v4 scans `@ui` component files for utility classes (`@source "../../ui/src"` from `app/src/`, `@source "../../ui/src"` from `idp/app/`). Do not use `@apply` inside `packages/ui/src/index.css` — it is imported as a plain CSS file and Tailwind does not process `@apply` in non-entry stylesheets.
+
 ## Architecture
 
 Three Bun packages in a workspace, each running on a fixed port:
@@ -41,6 +43,7 @@ Three Bun packages in a workspace, each running on a fixed port:
 | `packages/api` | 3001 | Fastify OAuth Authorization Server |
 | `packages/idp` | 3002 | React Router v7 SSR Identity Provider (login/register UI) |
 | `packages/app` | 3000 | Vite + React SPA (OAuth client) |
+| `packages/ui` | — | Shared component library (components, theme, CSS) |
 
 ### OAuth 2.0 PKCE Flow
 
@@ -84,6 +87,14 @@ Logout: `app/src/oauth.ts:logout()` clears `sessionStorage` then redirects to `i
 - `src/pkce.ts` — generates PKCE verifier/challenge using Web Crypto API (`window.crypto.subtle`)
 - `src/oauth.ts` — all OAuth flow functions; PKCE state and access token stored in `sessionStorage`
 - `VITE_IDP_URL`, `VITE_API_URL`, `VITE_CLIENT_ID`, `VITE_REDIRECT_URI` are the relevant env vars
+
+### UI Package (`packages/ui`)
+
+- `src/index.ts` — exports all components, `ThemeProvider`, `useTheme`
+- `src/theme.tsx` — `ThemeProvider` + `useTheme` hook; persists mode to `localStorage`; sets `data-theme` on `<html>`
+- `src/index.css` — all shared CSS custom properties, `@layer base`, and `@layer components` styles; no `@apply`
+- `src/components/` — `AppHeader`, `Button`, `Input`, `Label`, `FormField`
+- `src/layout/AppShell.tsx` — root shell wrapper
 
 ### Validation
 
