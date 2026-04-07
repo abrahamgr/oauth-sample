@@ -82,11 +82,13 @@
 
 @layer components {
   .app-shell {
-    @apply min-h-screen;
+    min-height: 100vh;
   }
 
   .app-header {
-    @apply sticky top-0 z-10;
+    position: sticky;
+    top: 0;
+    z-index: 10;
     background: linear-gradient(
       180deg,
       color-mix(in srgb, var(--bg) 84%, transparent) 0%,
@@ -97,7 +99,9 @@
   }
 
   .app-main {
-    @apply flex min-h-[calc(100vh-5.5rem)] flex-col;
+    display: flex;
+    min-height: calc(100vh - 5.5rem);
+    flex-direction: column;
   }
 
   .app-brand-mark {
@@ -106,7 +110,7 @@
   }
 
   .app-theme-toggle {
-    @apply text-right;
+    text-align: right;
   }
 
   .app-toggle-track {
@@ -117,7 +121,8 @@
 
   .app-toggle-option {
     color: var(--text-muted);
-    @apply cursor-pointer transition-colors;
+    cursor: pointer;
+    transition: color 150ms ease, background-color 150ms ease;
   }
 
   .app-toggle-option:hover {
@@ -131,11 +136,21 @@
   }
 
   .page-shell {
-    @apply flex flex-1 px-4 py-10 sm:px-8 sm:py-14;
+    display: flex;
+    flex: 1 1 0%;
+    padding: 2.5rem 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .page-shell {
+      padding: 3.5rem 2rem;
+    }
   }
 
   .page-center {
-    @apply flex items-center justify-center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .app-panel {
@@ -164,7 +179,10 @@
     background: var(--surface-muted);
     border: 1px solid var(--border);
     color: var(--text);
-    @apply rounded px-1.5 py-0.5 text-sm;
+    border-radius: 0.25rem;
+    padding: 0.125rem 0.375rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 
   .app-step {
@@ -177,7 +195,7 @@
     background: linear-gradient(135deg, var(--accent), var(--accent-strong));
     color: white;
     box-shadow: 0 20px 45px rgba(79, 70, 229, 0.35);
-    @apply transition-colors;
+    transition: color 150ms ease, background-color 150ms ease;
   }
 
   .app-button-primary:hover {
@@ -188,7 +206,7 @@
     background: var(--secondary-bg);
     color: var(--text);
     border: 1px solid var(--border);
-    @apply transition-colors;
+    transition: color 150ms ease, background-color 150ms ease;
   }
 
   .app-button-secondary:hover {
@@ -204,7 +222,7 @@
     );
     color: white;
     box-shadow: 0 20px 45px rgba(248, 113, 113, 0.3);
-    @apply transition-colors;
+    transition: color 150ms ease, background-color 150ms ease;
   }
 
   .app-button-danger:hover {
@@ -217,7 +235,7 @@
 
   .app-link {
     color: var(--link);
-    @apply transition-colors;
+    transition: color 150ms ease;
   }
 
   .app-link:hover {
@@ -251,17 +269,35 @@
   }
 
   .ui-label {
+    display: block;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
     color: var(--text);
-    @apply block text-sm font-medium;
   }
 
   .ui-input {
+    display: block;
+    width: 100%;
+    appearance: none;
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transition: color 150ms ease, background-color 150ms ease, border-color
+      150ms ease;
     background: var(--surface-strong);
     border: 1px solid var(--border-strong);
     color: var(--text);
-    @apply block w-full appearance-none rounded-md px-3 py-2 text-sm transition-colors;
-    @apply placeholder:text-[color:var(--text-subtle)];
-    @apply focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)];
+  }
+
+  .ui-input::placeholder {
+    color: var(--text-subtle);
+  }
+
+  .ui-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent);
   }
 
   .ui-input-error {
@@ -269,11 +305,13 @@
   }
 
   .ui-input-error:focus {
-    --tw-ring-color: var(--danger);
+    box-shadow: 0 0 0 2px var(--danger);
   }
 
   .ui-error-message {
     color: color-mix(in srgb, var(--danger) 80%, var(--text));
-    @apply mt-1 text-xs;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
   }
 }
