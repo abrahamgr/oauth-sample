@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, FormField, Input } from '@ui'
 import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
-import { data, redirect } from 'react-router'
+import { Link, data, redirect } from 'react-router'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import { useActionData, useLoaderData, useSubmit } from 'react-router'
 import { validateCredentials } from '../lib/api-client'
@@ -128,12 +128,12 @@ export default function LoginPage() {
 
             <p className="text-center text-sm text-[color:var(--text-muted)]">
               No account?{' '}
-              <a
-                href={`/register?redirect=${encodeURIComponent(redirectTo)}`}
+              <Link
+                to={`/register?redirect=${encodeURIComponent(redirectTo)}`}
                 className="app-link font-medium"
               >
                 Create one
-              </a>
+              </Link>
             </p>
           </form>
         </div>
