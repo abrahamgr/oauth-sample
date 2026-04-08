@@ -1,4 +1,4 @@
-import { SignJWT } from 'jose'
+import { SignJWT, jwtVerify } from 'jose'
 
 // SESSION_SECRET must match the API's SESSION_SECRET so that the API can
 // verify the session cookie that the IDP sets after login.
@@ -27,4 +27,16 @@ export async function signSession(userId: string): Promise<string> {
  */
 export function buildSessionCookie(token: string): string {
   return `idp_session=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=600`
+}
+
+export async function verifySession(request: Request): Promise<string | null> {
+  const cookieHeader = request.headers.get('Cookie') ?? ''
+  const match = cookieHeader.match(/(?:^|;\s*)idp_session=([^;]+)/)
+  if (!match) return null
+  try {
+    const { payload } = await jwtVerify(match[1], secret)
+    return (payload.sub as string) ?? null
+  } catch {
+    return null
+  }
 }

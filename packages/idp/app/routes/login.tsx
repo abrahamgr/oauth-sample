@@ -8,7 +8,11 @@ import { useActionData, useLoaderData, useSubmit } from 'react-router'
 import { validateCredentials } from '../lib/api-client'
 import { getClientIp, isRateLimited } from '../lib/rate-limit.server'
 import { type LoginFields, loginSchema } from '../lib/schemas'
-import { buildSessionCookie, signSession } from '../sessions.server'
+import {
+  buildSessionCookie,
+  signSession,
+  verifySession,
+} from '../sessions.server'
 
 // ── Loader ────────────────────────────────────────────────────────────────────
 
@@ -16,6 +20,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
   const redirectTo = url.searchParams.get('redirect') ?? ''
   const message = url.searchParams.get('message') ?? ''
+
+  const userId = await verifySession(request)
+  if (userId) return redirect(redirectTo || 'http://localhost:3000')
+
   return { redirectTo, message }
 }
 
