@@ -7,6 +7,7 @@ import {
 } from './db'
 import { registerCookie } from './plugins/cookie'
 import { registerCors } from './plugins/cors'
+import { registerRateLimit } from './plugins/rate-limit'
 import { authorizeRoutes } from './routes/authorize'
 import { internalRoutes } from './routes/internal'
 import { passwordResetRoutes } from './routes/password-reset'
@@ -20,6 +21,7 @@ const app = Fastify({ logger: { level: 'info' } })
 
 await registerCors(app)
 await registerCookie(app)
+await registerRateLimit(app)
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 

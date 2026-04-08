@@ -6,6 +6,7 @@ import { Link, data, redirect } from 'react-router'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import { useActionData, useLoaderData, useSubmit } from 'react-router'
 import { validateCredentials } from '../lib/api-client'
+import { getClientIp, isRateLimited } from '../lib/rate-limit.server'
 import { type LoginFields, loginSchema } from '../lib/schemas'
 import { buildSessionCookie, signSession } from '../sessions.server'
 
@@ -21,6 +22,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
 // ── Action ────────────────────────────────────────────────────────────────────
 
 export async function action({ request }: ActionFunctionArgs) {
+  const ip = getClientIp(request)
+  if (isRateLimited(`login:${ip}`, { max: 10, windowMs: 15 * 60 * 1000 })) {
+    return data(
+      { error: 'Too many attempts. Please try again later.', redirectTo: '' },
+      { status: 429 },
+    )
+  }
+
   const form = await request.formData()
   const email = form.get('email') as string
   const password = form.get('password') as string

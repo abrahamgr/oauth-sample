@@ -1,15 +1,17 @@
 // Configuration and static OAuth client registry
 // In production these would come from a database.
 
+function requireEnv(name: string): string {
+  const value = process.env[name]
+  if (!value) throw new Error(`Missing required environment variable: ${name}`)
+  return value
+}
+
 export const config = {
   port: Number(process.env.PORT ?? 3001),
-  jwtSecret:
-    process.env.JWT_SECRET ??
-    'super-secret-jwt-key-change-in-production-32chars',
-  sessionSecret:
-    process.env.SESSION_SECRET ??
-    'session-signing-secret-change-in-production-32c',
-  internalSecret: process.env.INTERNAL_SECRET ?? 'internal-api-secret',
+  jwtSecret: requireEnv('JWT_SECRET'),
+  sessionSecret: requireEnv('SESSION_SECRET'),
+  internalSecret: requireEnv('INTERNAL_SECRET'),
   idpUrl: process.env.IDP_URL ?? 'http://localhost:3002',
   appUrl: process.env.APP_URL ?? 'http://localhost:3000',
   smtp: {
