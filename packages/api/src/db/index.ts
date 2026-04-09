@@ -1,17 +1,22 @@
-import { Database } from 'bun:sqlite'
 import { eq, lt } from 'drizzle-orm'
-import { drizzle } from 'drizzle-orm/bun-sqlite'
-import { migrate } from 'drizzle-orm/bun-sqlite/migrator'
+import { drizzle } from 'drizzle-orm/postgres-js'
+import { migrate } from 'drizzle-orm/postgres-js/migrator'
+import postgres from 'postgres'
 import * as schema from './schema'
 
 // ── Client ────────────────────────────────────────────────────────────────────
 
-const sqlite = new Database('oauth.sqlite', { create: true })
-sqlite.run('PRAGMA journal_mode = WAL')
-sqlite.run('PRAGMA foreign_keys = ON')
+// biome-ignore lint/style/noNonNullAssertion: <explanation>
+const DATABASE_URL = process.env.DATABASE_URL!
 
-const db = drizzle(sqlite, { schema })
-migrate(db, { migrationsFolder: './drizzle' })
+const client = postgres(DATABASE_URL)
+export const db = drizzle(client, { schema })
+
+export async function runMigrations() {
+  const migrationClient = postgres(DATABASE_URL, { max: 1 })
+  await migrate(drizzle(migrationClient), { migrationsFolder: './drizzle' })
+  await migrationClient.end()
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -22,131 +27,133 @@ export type PasswordResetToken = typeof schema.passwordResetTokens.$inferSelect
 
 // ── User queries ──────────────────────────────────────────────────────────────
 
-export function createUser(
+export async function createUser(
   user: Omit<typeof schema.users.$inferInsert, 'created_at'>,
-): void {
-  db.insert(schema.users).values(user).run()
+): Promise<void> {
+  await db.insert(schema.users).values(user)
 }
 
-export function findUserByEmail(email: string): User | null {
-  return (
-    db.select().from(schema.users).where(eq(schema.users.email, email)).get() ??
-    null
-  )
+export async function findUserByEmail(email: string): Promise<User | null> {
+  const [row] = await db
+    .select()
+    .from(schema.users)
+    .where(eq(schema.users.email, email))
+  return row ?? null
 }
 
-export function findUserById(id: string): User | null {
-  return (
-    db.select().from(schema.users).where(eq(schema.users.id, id)).get() ?? null
-  )
+export async function findUserById(id: string): Promise<User | null> {
+  const [row] = await db
+    .select()
+    .from(schema.users)
+    .where(eq(schema.users.id, id))
+  return row ?? null
 }
 
-export function updateUserPassword(id: string, passwordHash: string): void {
-  db.update(schema.users)
+export async function updateUserPassword(
+  id: string,
+  passwordHash: string,
+): Promise<void> {
+  await db
+    .update(schema.users)
     .set({ password_hash: passwordHash })
     .where(eq(schema.users.id, id))
-    .run()
 }
 
 // ── Auth code queries ─────────────────────────────────────────────────────────
 
-export function createCode(
+export async function createCode(
   code: Omit<typeof schema.oauthCodes.$inferInsert, never>,
-): void {
-  db.insert(schema.oauthCodes).values(code).run()
+): Promise<void> {
+  await db.insert(schema.oauthCodes).values(code)
 }
 
-export function findCode(code: string): OAuthCode | null {
-  return (
-    db
-      .select()
-      .from(schema.oauthCodes)
-      .where(eq(schema.oauthCodes.code, code))
-      .get() ?? null
-  )
+export async function findCode(code: string): Promise<OAuthCode | null> {
+  const [row] = await db
+    .select()
+    .from(schema.oauthCodes)
+    .where(eq(schema.oauthCodes.code, code))
+  return row ?? null
 }
 
-export function deleteCode(code: string): void {
-  db.delete(schema.oauthCodes).where(eq(schema.oauthCodes.code, code)).run()
+export async function deleteCode(code: string): Promise<void> {
+  await db.delete(schema.oauthCodes).where(eq(schema.oauthCodes.code, code))
 }
 
 // ── Token queries ─────────────────────────────────────────────────────────────
 
-export function createToken(
+export async function createToken(
   token: Omit<typeof schema.oauthTokens.$inferInsert, 'created_at'>,
-): void {
-  db.insert(schema.oauthTokens).values(token).run()
+): Promise<void> {
+  await db.insert(schema.oauthTokens).values(token)
 }
 
-export function findTokenByRefreshToken(
+export async function findTokenByRefreshToken(
   refreshToken: string,
-): OAuthToken | null {
-  return (
-    db
-      .select()
-      .from(schema.oauthTokens)
-      .where(eq(schema.oauthTokens.refresh_token, refreshToken))
-      .get() ?? null
-  )
+): Promise<OAuthToken | null> {
+  const [row] = await db
+    .select()
+    .from(schema.oauthTokens)
+    .where(eq(schema.oauthTokens.refresh_token, refreshToken))
+  return row ?? null
 }
 
-export function deleteToken(refreshToken: string): void {
-  db.delete(schema.oauthTokens)
+export async function deleteToken(refreshToken: string): Promise<void> {
+  await db
+    .delete(schema.oauthTokens)
     .where(eq(schema.oauthTokens.refresh_token, refreshToken))
-    .run()
 }
 
 // ── Password reset token queries ──────────────────────────────────────────────
 
-export function createResetToken(
+export async function createResetToken(
   token: string,
   userId: string,
   expiresAt: number,
-): void {
-  db.insert(schema.passwordResetTokens)
+): Promise<void> {
+  await db
+    .insert(schema.passwordResetTokens)
     .values({ token, user_id: userId, expires_at: expiresAt })
-    .run()
 }
 
-export function findResetToken(token: string): PasswordResetToken | null {
-  return (
-    db
-      .select()
-      .from(schema.passwordResetTokens)
-      .where(eq(schema.passwordResetTokens.token, token))
-      .get() ?? null
-  )
+export async function findResetToken(
+  token: string,
+): Promise<PasswordResetToken | null> {
+  const [row] = await db
+    .select()
+    .from(schema.passwordResetTokens)
+    .where(eq(schema.passwordResetTokens.token, token))
+  return row ?? null
 }
 
-export function markResetTokenUsed(token: string): void {
-  db.update(schema.passwordResetTokens)
+export async function markResetTokenUsed(token: string): Promise<void> {
+  await db
+    .update(schema.passwordResetTokens)
     .set({ used_at: Math.floor(Date.now() / 1000) })
     .where(eq(schema.passwordResetTokens.token, token))
-    .run()
 }
 
 // ── Cleanup queries ───────────────────────────────────────────────────────────
 
-export function deleteExpiredCodes(): void {
-  db.delete(schema.oauthCodes)
+export async function deleteExpiredCodes(): Promise<void> {
+  await db
+    .delete(schema.oauthCodes)
     .where(lt(schema.oauthCodes.expires_at, Date.now()))
-    .run()
 }
 
-export function deleteExpiredTokens(): void {
-  db.delete(schema.oauthTokens)
+export async function deleteExpiredTokens(): Promise<void> {
+  await db
+    .delete(schema.oauthTokens)
     .where(lt(schema.oauthTokens.expires_at, Date.now()))
-    .run()
 }
 
-export function deleteUserTokens(userId: string): void {
-  db.delete(schema.oauthTokens)
+export async function deleteUserTokens(userId: string): Promise<void> {
+  await db
+    .delete(schema.oauthTokens)
     .where(eq(schema.oauthTokens.user_id, userId))
-    .run()
 }
 
-export function deleteExpiredResetTokens(): void {
-  db.delete(schema.passwordResetTokens)
+export async function deleteExpiredResetTokens(): Promise<void> {
+  await db
+    .delete(schema.passwordResetTokens)
     .where(lt(schema.passwordResetTokens.expires_at, Date.now()))
-    .run()
 }

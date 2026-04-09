@@ -4,6 +4,7 @@ import {
   deleteExpiredCodes,
   deleteExpiredResetTokens,
   deleteExpiredTokens,
+  runMigrations,
 } from './db'
 import { registerCookie } from './plugins/cookie'
 import { registerCors } from './plugins/cors'
@@ -16,6 +17,10 @@ import { tokenRoutes } from './routes/token'
 import { userinfoRoutes } from './routes/userinfo'
 
 const app = Fastify({ logger: { level: 'info' } })
+
+// ── Migrations ────────────────────────────────────────────────────────────────
+
+await runMigrations()
 
 // ── Plugins ───────────────────────────────────────────────────────────────────
 
@@ -35,10 +40,10 @@ await app.register(passwordResetRoutes)
 // ── Cleanup ───────────────────────────────────────────────────────────────────
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000
-setInterval(() => {
-  deleteExpiredCodes()
-  deleteExpiredTokens()
-  deleteExpiredResetTokens()
+setInterval(async () => {
+  await deleteExpiredCodes()
+  await deleteExpiredTokens()
+  await deleteExpiredResetTokens()
 }, ONE_DAY_MS)
 
 // ── Start ─────────────────────────────────────────────────────────────────────

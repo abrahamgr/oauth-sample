@@ -47,7 +47,7 @@ export async function tokenRoutes(app: FastifyInstance) {
       if (data.grant_type === 'refresh_token') {
         const { refresh_token, client_id } = data
 
-        const storedToken = findTokenByRefreshToken(refresh_token)
+        const storedToken = await findTokenByRefreshToken(refresh_token)
         if (!storedToken) {
           return reply
             .status(400)
@@ -55,7 +55,7 @@ export async function tokenRoutes(app: FastifyInstance) {
         }
 
         if (storedToken.expires_at < Date.now()) {
-          deleteToken(refresh_token)
+          await deleteToken(refresh_token)
           return reply
             .status(400)
             .send({ error: 'invalid_grant: refresh token expired' })
@@ -68,7 +68,7 @@ export async function tokenRoutes(app: FastifyInstance) {
         }
 
         // Token rotation — delete old record before issuing new one
-        deleteToken(refresh_token)
+        await deleteToken(refresh_token)
 
         const accessToken = await signAccessToken(
           storedToken.user_id,
@@ -76,7 +76,7 @@ export async function tokenRoutes(app: FastifyInstance) {
         )
         const newRefreshToken = crypto.randomUUID()
 
-        createToken({
+        await createToken({
           access_token: accessToken,
           refresh_token: newRefreshToken,
           user_id: storedToken.user_id,
@@ -100,7 +100,7 @@ export async function tokenRoutes(app: FastifyInstance) {
 
       // ── Look up the authorization code ────────────────────────────────────────
 
-      const storedCode = findCode(code)
+      const storedCode = await findCode(code)
       if (!storedCode) {
         return reply
           .status(400)
@@ -120,7 +120,7 @@ export async function tokenRoutes(app: FastifyInstance) {
       }
 
       if (storedCode.expires_at < Date.now()) {
-        deleteCode(code)
+        await deleteCode(code)
         return reply.status(400).send({ error: 'invalid_grant: code expired' })
       }
 
@@ -134,7 +134,7 @@ export async function tokenRoutes(app: FastifyInstance) {
 
       // ── Delete the code immediately (prevent replay attacks) ──────────────────
 
-      deleteCode(code)
+      await deleteCode(code)
 
       // ── Issue JWT access token ────────────────────────────────────────────────
 
@@ -144,7 +144,7 @@ export async function tokenRoutes(app: FastifyInstance) {
       )
       const refreshToken = crypto.randomUUID()
 
-      createToken({
+      await createToken({
         access_token: accessToken,
         refresh_token: refreshToken,
         user_id: storedCode.user_id,

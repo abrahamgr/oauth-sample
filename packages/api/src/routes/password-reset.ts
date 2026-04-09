@@ -36,7 +36,7 @@ export async function passwordResetRoutes(app: FastifyInstance) {
       }
 
       const { email } = parsed.data
-      const user = findUserByEmail(email)
+      const user = await findUserByEmail(email)
 
       if (user) {
         const token = Buffer.from(
@@ -44,7 +44,7 @@ export async function passwordResetRoutes(app: FastifyInstance) {
         ).toString('hex')
         const expiresAt = Date.now() + RESET_TOKEN_TTL_MS
 
-        createResetToken(token, user.id, expiresAt)
+        await createResetToken(token, user.id, expiresAt)
         await sendPasswordResetEmail(user.email, user.name, token)
       }
 
@@ -74,7 +74,7 @@ export async function passwordResetRoutes(app: FastifyInstance) {
 
       const { token, password } = parsed.data
 
-      const storedToken = findResetToken(token)
+      const storedToken = await findResetToken(token)
       if (!storedToken) {
         return reply.status(400).send({ error: 'invalid_token' })
       }
@@ -88,9 +88,9 @@ export async function passwordResetRoutes(app: FastifyInstance) {
       }
 
       const passwordHash = await Bun.password.hash(password)
-      updateUserPassword(storedToken.user_id, passwordHash)
-      markResetTokenUsed(token)
-      deleteUserTokens(storedToken.user_id)
+      await updateUserPassword(storedToken.user_id, passwordHash)
+      await markResetTokenUsed(token)
+      await deleteUserTokens(storedToken.user_id)
 
       return reply.send({ message: 'Password updated successfully.' })
     },

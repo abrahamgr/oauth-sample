@@ -21,7 +21,7 @@ export async function internalRoutes(app: FastifyInstance) {
 
     const { email, password } = parsed.data
 
-    const user = findUserByEmail(email)
+    const user = await findUserByEmail(email)
     if (!user) {
       return reply.status(401).send({ error: 'Invalid credentials' })
     }

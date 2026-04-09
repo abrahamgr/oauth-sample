@@ -85,7 +85,7 @@ export async function authorizeRoutes(app: FastifyInstance) {
     const code = crypto.randomUUID()
     const expiresAt = Date.now() + 10 * 60 * 1000 // 10 minutes
 
-    createCode({
+    await createCode({
       code,
       user_id: userId,
       client_id,

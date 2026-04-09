@@ -22,7 +22,7 @@ export async function registerRoutes(app: FastifyInstance) {
 
     const { email, password, name } = parsed.data
 
-    if (findUserByEmail(email)) {
+    if (await findUserByEmail(email)) {
       return reply
         .status(409)
         .send({ error: 'A user with that email already exists' })
@@ -31,7 +31,7 @@ export async function registerRoutes(app: FastifyInstance) {
     const passwordHash = await Bun.password.hash(password)
     const id = crypto.randomUUID()
 
-    createUser({ id, email, password_hash: passwordHash, name })
+    await createUser({ id, email, password_hash: passwordHash, name })
 
     return reply.status(201).send({ id, email, name })
   })

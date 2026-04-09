@@ -36,7 +36,7 @@ export async function userinfoRoutes(app: FastifyInstance) {
         .send({ error: 'invalid_token' })
     }
 
-    const user = findUserById(userId)
+    const user = await findUserById(userId)
     if (!user) {
       return reply.status(404).send({ error: 'user_not_found' })
     }
