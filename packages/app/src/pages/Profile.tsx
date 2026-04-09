@@ -1,13 +1,6 @@
-import { Button } from '@ui'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
-import {
-  IDP_URL,
-  type UserInfo,
-  fetchUserInfo,
-  isLoggedIn,
-  logout,
-} from '../oauth'
+import { type UserInfo, fetchUserInfo, isLoggedIn } from '../oauth'
 
 export default function Profile() {
   const navigate = useNavigate()
@@ -112,27 +105,6 @@ export default function Profile() {
                 </dd>
               </div>
             </dl>
-          </div>
-
-          <div className="flex gap-3 px-8 pb-8">
-            <Link
-              to="/"
-              className="app-button-secondary flex flex-1 items-center justify-center rounded-lg px-4 py-2 text-sm font-medium"
-            >
-              Home
-            </Link>
-            <a
-              href={`${IDP_URL}/forgot-password?email=${encodeURIComponent(user?.email ?? '')}`}
-              className="app-button-secondary flex flex-1 items-center justify-center rounded-lg px-4 py-2 text-sm font-medium"
-            >
-              Change password
-            </a>
-            <Button
-              onClick={logout}
-              className="flex flex-1 cursor-pointer items-center justify-center rounded-lg px-4 py-2 text-sm font-medium"
-            >
-              Logout
-            </Button>
           </div>
         </div>
       </div>

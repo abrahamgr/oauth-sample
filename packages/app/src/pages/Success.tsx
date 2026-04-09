@@ -1,7 +1,3 @@
-import { Button } from '@ui'
-import { Link } from 'react-router'
-import { logout } from '../oauth'
-
 export default function Success() {
   return (
     <div className="page-shell page-center">
@@ -50,22 +46,6 @@ export default function Success() {
               Refresh token stored for later use
             </li>
           </ul>
-        </div>
-
-        <div className="flex gap-3">
-          <Link
-            to="/profile"
-            className="app-button-primary flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold"
-          >
-            View Profile
-          </Link>
-          <Button
-            variant="secondary"
-            onClick={logout}
-            className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold"
-          >
-            Logout
-          </Button>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { AppHeader, AppShell, useTheme } from '@ui'
 import { Link, Outlet } from 'react-router'
+import NavMenu from './NavMenu'
 
 function AppBrand() {
   const { mode } = useTheme()
@@ -37,7 +38,9 @@ function AppBrand() {
 export default function AppLayout() {
   return (
     <AppShell>
-      <AppHeader brand={<AppBrand />} />
+      <AppHeader brand={<AppBrand />}>
+        <NavMenu />
+      </AppHeader>
       <main className="app-main">
         <Outlet />
       </main>
