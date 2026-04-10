@@ -18,10 +18,6 @@ import { userinfoRoutes } from './routes/userinfo'
 
 const app = Fastify({ logger: { level: 'info' } })
 
-// ── Migrations ────────────────────────────────────────────────────────────────
-
-await runMigrations()
-
 // ── Plugins ───────────────────────────────────────────────────────────────────
 
 await registerCors(app)
