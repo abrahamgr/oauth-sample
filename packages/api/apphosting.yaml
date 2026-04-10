@@ -1,0 +1,23 @@
+runConfig:
+  runtime: custom
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 512
+  minInstances: 0
+  maxInstances: 10
+
+env:
+  - variable: PORT
+    value: "8080"
+  - variable: DATABASE_URL
+    secret: DATABASE_URL
+  - variable: JWT_SECRET
+    secret: JWT_SECRET
+  - variable: SESSION_SECRET
+    secret: SESSION_SECRET
+  - variable: INTERNAL_SECRET
+    secret: INTERNAL_SECRET
+  - variable: IDP_URL
+    secret: IDP_URL
+  - variable: APP_URL
+    secret: APP_URL

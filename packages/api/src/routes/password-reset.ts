@@ -45,7 +45,7 @@ export async function passwordResetRoutes(app: FastifyInstance) {
         const expiresAt = Date.now() + RESET_TOKEN_TTL_MS
 
         await createResetToken(token, user.id, expiresAt)
-        await sendPasswordResetEmail(user.email, user.name, token)
+        // await sendPasswordResetEmail(user.email, user.name, token)
       }
 
       return reply.send({

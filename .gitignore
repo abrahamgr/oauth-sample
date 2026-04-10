@@ -37,3 +37,6 @@ Thumbs.db
 
 # Bun
 bun.lockb
+
+# GCP
+sa-key.json

@@ -1,0 +1,17 @@
+runConfig:
+  runtime: nodejs22
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 512
+  minInstances: 0
+  maxInstances: 10
+
+env:
+  - variable: PORT
+    value: "8080"
+  - variable: API_URL
+    secret: API_URL
+  - variable: INTERNAL_SECRET
+    secret: INTERNAL_SECRET
+  - variable: SESSION_SECRET
+    secret: SESSION_SECRET

@@ -171,4 +171,115 @@ All variables have working defaults for local development — no `.env` file is 
 | `VITE_API_URL` | `http://localhost:3001` | API base URL |
 | `VITE_IDP_URL` | `http://localhost:3002` | IDP base URL (used for logout redirect) |
 | `VITE_CLIENT_ID` | `oauth-sample-app` | Registered client ID |
-| `VITE_REDIRECT_URI` | `http://localhost:3000/callback` | OAuth callback URL |
+
+## Deployment
+
+Deployments are triggered manually from GitHub Actions (Actions → Deploy to Firebase → Run workflow). You can deploy all services or a subset via the `services` input (e.g. `db,api` to only migrate and redeploy the API).
+
+| Service | Target |
+|---|---|
+| `app` | Firebase Hosting (static SPA) |
+| `idp` | Firebase App Hosting (SSR) |
+| `api` | Firebase App Hosting (Bun, via Dockerfile) |
+| DB | Neon — Drizzle migrations run in CI |
+
+### One-Time Firebase Setup
+
+1. **Install Firebase CLI and login**
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   ```
+
+2. **Set your Firebase project** (run from repo root)
+   ```bash
+   # Replace YOUR_PROJECT_ID in .firebaserc, then:
+   firebase use default
+   ```
+
+3. **Create App Hosting backends** (once per environment)
+   ```bash
+   # IDP backend — React Router v7 SSR
+   firebase apphosting:backends:create --project YOUR_PROJECT_ID
+   # When prompted: name it "idp", root directory → packages/idp
+
+   # API backend — Fastify (Bun, Dockerfile)
+   firebase apphosting:backends:create --project YOUR_PROJECT_ID
+   # When prompted: name it "api", root directory → packages/api
+   ```
+
+4. **Note the backend IDs**
+   ```bash
+   firebase apphosting:backends:list --project YOUR_PROJECT_ID
+   ```
+
+5. **Store secrets in Firebase Secret Manager** (for App Hosting env vars)
+   ```bash
+   firebase apphosting:secrets:set DATABASE_URL
+   firebase apphosting:secrets:set JWT_SECRET
+   firebase apphosting:secrets:set SESSION_SECRET
+   firebase apphosting:secrets:set INTERNAL_SECRET
+   firebase apphosting:secrets:set IDP_URL
+   firebase apphosting:secrets:set APP_URL
+   firebase apphosting:secrets:set API_URL
+   ```
+
+6. **Set up Workload Identity Federation** (keyless — no JSON credentials stored)
+   ```bash
+   PROJECT_ID=oauth-sample-7fe4b
+   PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
+   REPO=abrahamgr/oauth-sample   # e.g. abraham/oauth-sample
+
+   # Create the WIF pool
+   gcloud iam workload-identity-pools create "github-pool" \
+     --project=$PROJECT_ID \
+     --location="global" \
+     --display-name="GitHub Actions Pool"
+
+   # Create the OIDC provider (scoped to your repo)
+   gcloud iam workload-identity-pools providers create-oidc "github-provider" \
+     --project=$PROJECT_ID \
+     --location="global" \
+     --workload-identity-pool="github-pool" \
+     --display-name="GitHub Provider" \
+     --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.actor=assertion.actor" \
+     --issuer-uri="https://token.actions.githubusercontent.com" \
+     --attribute-condition="assertion.repository=='$REPO'"
+
+   # Create the service account (no key file generated)
+   gcloud iam service-accounts create github-actions-deploy \
+     --display-name="GitHub Actions Deploy" \
+     --project=$PROJECT_ID
+
+   # Allow the WIF provider to impersonate the service account
+   gcloud iam service-accounts add-iam-policy-binding \
+     github-actions-deploy@$PROJECT_ID.iam.gserviceaccount.com \
+     --project=$PROJECT_ID \
+     --role="roles/iam.workloadIdentityUser" \
+     --member="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository/$REPO"
+
+   # Grant deploy roles
+   for role in roles/firebasehosting.admin roles/firebaseapphosting.admin roles/run.admin roles/iam.serviceAccountUser; do
+     gcloud projects add-iam-policy-binding $PROJECT_ID \
+       --member="serviceAccount:github-actions-deploy@$PROJECT_ID.iam.gserviceaccount.com" \
+       --role="$role"
+   done
+
+   # Print the WIF provider resource name — copy this as your WIF_PROVIDER secret
+   echo "projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
+   ```
+
+7. **Add GitHub Secrets** (Settings → Secrets and variables → Actions)
+
+   | Secret | Value |
+   |---|---|
+   | `WIF_PROVIDER` | Output of the last `echo` above |
+   | `SERVICE_ACCOUNT_EMAIL` | `github-actions-deploy@oauth-sample-7fe4b.iam.gserviceaccount.com` |
+   | `FIREBASE_PROJECT_ID` | Your Firebase project ID |
+   | `FIREBASE_IDP_BACKEND_ID` | Backend ID from step 4 (idp) |
+   | `FIREBASE_API_BACKEND_ID` | Backend ID from step 4 (api) |
+   | `DATABASE_URL` | Neon connection string (for Drizzle migrations) |
+   | `VITE_API_URL` | Production API URL |
+   | `VITE_CLIENT_ID` | OAuth client ID |
+
+   > Per-service secrets (`JWT_SECRET`, `SESSION_SECRET`, etc.) live in Firebase Secret Manager — no need to duplicate them in GitHub secrets.
