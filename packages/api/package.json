@@ -23,6 +23,6 @@
     "@types/nodemailer": "^8.0.0",
     "bun-types": "latest",
     "drizzle-kit": "^0.31.10",
-    "typescript": "^5.7.0"
+    "typescript": "^6.0.2"
   }
 }

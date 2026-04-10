@@ -6,7 +6,7 @@
       "devDependencies": {
         "@biomejs/biome": "^1.9.0",
         "lefthook": "^2.1.5",
-        "typescript": "^5.7.0",
+        "typescript": "^6.0.2",
       },
     },
     "packages/api": {
@@ -26,13 +26,13 @@
         "@types/nodemailer": "^8.0.0",
         "bun-types": "latest",
         "drizzle-kit": "^0.31.10",
-        "typescript": "^5.7.0",
+        "typescript": "^6.0.2",
       },
     },
     "packages/app": {
       "name": "app",
       "dependencies": {
-        "@oauth-sample/ui": "workspace:*",
+        "@oauth-sample/ui": "*",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "react-router": "^7.0.0",
@@ -43,7 +43,7 @@
         "@types/react-dom": "^19.0.0",
         "@vitejs/plugin-react": "^4.0.0",
         "tailwindcss": "^4.0.0",
-        "typescript": "^5.7.0",
+        "typescript": "^6.0.2",
         "vite": "^6.0.0",
         "vite-tsconfig-paths": "^5.0.0",
       },
@@ -52,7 +52,7 @@
       "name": "idp",
       "dependencies": {
         "@hookform/resolvers": "^5.2.2",
-        "@oauth-sample/ui": "workspace:*",
+        "@oauth-sample/ui": "*",
         "@react-router/node": "^7.0.0",
         "@react-router/serve": "^7.0.0",
         "isbot": "^5.0.0",
@@ -69,7 +69,7 @@
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
         "tailwindcss": "^4.0.0",
-        "typescript": "^5.7.0",
+        "typescript": "^6.0.2",
         "vite": "^6.0.0",
         "vite-tsconfig-paths": "^5.0.0",
       },
@@ -79,7 +79,7 @@
       "devDependencies": {
         "@types/react": "^19.0.0",
         "@types/react-dom": "^19.0.0",
-        "typescript": "^5.7.0",
+        "typescript": "^6.0.2",
       },
       "peerDependencies": {
         "react": "^19.0.0",
@@ -438,7 +438,7 @@
 
     "buffer-from": ["buffer-from@1.1.2", "", {}, "sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ=="],
 
-    "bun-types": ["bun-types@1.3.11", "", { "dependencies": { "@types/node": "*" } }, "sha512-1KGPpoxQWl9f6wcZh57LvrPIInQMn2TQ7jsgxqpRzg+l0QPOFvJVH7HmvHo/AiPgwXy+/Thf6Ov3EdVn1vOabg=="],
+    "bun-types": ["bun-types@1.3.12", "", { "dependencies": { "@types/node": "*" } }, "sha512-HqOLj5PoFajAQciOMRiIZGNoKxDJSr6qigAttOX40vJuSp6DN/CxWp9s3C1Xwm4oH7ybueITwiaOcWXoYVoRkA=="],
 
     "bytes": ["bytes@3.1.2", "", {}, "sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg=="],
 
@@ -830,7 +830,7 @@
 
     "type-is": ["type-is@1.6.18", "", { "dependencies": { "media-typer": "0.3.0", "mime-types": "~2.1.24" } }, "sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g=="],
 
-    "typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
+    "typescript": ["typescript@6.0.2", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ=="],
 
     "undici-types": ["undici-types@7.18.2", "", {}, "sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w=="],
 

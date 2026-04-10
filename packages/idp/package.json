@@ -8,7 +8,7 @@
     "start": "react-router-serve ./build/server/index.js"
   },
   "dependencies": {
-    "@oauth-sample/ui": "workspace:*",
+    "@oauth-sample/ui": "*",
     "@hookform/resolvers": "^5.2.2",
     "@react-router/node": "^7.0.0",
     "@react-router/serve": "^7.0.0",
@@ -26,7 +26,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "tailwindcss": "^4.0.0",
-    "typescript": "^5.7.0",
+    "typescript": "^6.0.2",
     "vite": "^6.0.0",
     "vite-tsconfig-paths": "^5.0.0"
   }
