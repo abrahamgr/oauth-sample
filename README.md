@@ -259,11 +259,16 @@ Deployments are triggered manually from GitHub Actions (Actions → Deploy to Fi
      --member="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository/$REPO"
 
    # Grant deploy roles
-   for role in roles/firebasehosting.admin roles/firebaseapphosting.admin roles/run.admin roles/iam.serviceAccountUser; do
+   for role in roles/firebasehosting.admin roles/firebaseapphosting.admin roles/run.admin roles/iam.serviceAccountUser roles/iam.serviceUsageUser roles/iam.serviceAccountCreator roles/resourcemanager.projectIamAdmin roles/developerconnect.viewer; do
      gcloud projects add-iam-policy-binding $PROJECT_ID \
        --member="serviceAccount:github-actions-deploy@$PROJECT_ID.iam.gserviceaccount.com" \
        --role="$role"
    done
+
+   # grant permissions at project level
+   gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:github-actions-deploy@$PROJECT_ID.iam.gserviceaccount.com" \
+    --role="roles/iam.serviceAccountUser"
 
    # Print the WIF provider resource name — copy this as your WIF_PROVIDER secret
    echo "projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
