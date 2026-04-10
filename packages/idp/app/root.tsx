@@ -1,4 +1,4 @@
-import { ThemeProvider } from '@ui'
+import { ThemeProvider } from '@oauth-sample/ui'
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'
 import './app.css'
 

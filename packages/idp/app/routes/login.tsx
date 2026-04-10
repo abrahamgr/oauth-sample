@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, FormField, Input } from '@ui'
+import { Button, FormField, Input } from '@oauth-sample/ui'
 import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, data, redirect } from 'react-router'

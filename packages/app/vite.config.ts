@@ -8,7 +8,10 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), tsconfigPaths()],
   resolve: {
     alias: {
-      '@ui/index.css': path.resolve(__dirname, '../ui/src/index.css'),
+      '@oauth-sample/ui/index.css': path.resolve(
+        __dirname,
+        '../ui/src/index.css',
+      ),
     },
   },
   server: {

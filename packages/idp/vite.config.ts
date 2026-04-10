@@ -10,7 +10,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@ui/index.css': path.resolve(__dirname, '../ui/src/index.css'),
+      '@oauth-sample/ui/index.css': path.resolve(
+        __dirname,
+        '../ui/src/index.css',
+      ),
     },
   },
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],

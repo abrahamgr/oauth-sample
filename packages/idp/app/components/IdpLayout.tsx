@@ -1,4 +1,4 @@
-import { AppHeader, AppShell, useTheme } from '@ui'
+import { AppHeader, AppShell, useTheme } from '@oauth-sample/ui'
 import { Outlet } from 'react-router'
 
 function IdpBrand() {

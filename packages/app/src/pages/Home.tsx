@@ -1,4 +1,4 @@
-import { Button } from '@ui'
+import { Button } from '@oauth-sample/ui'
 import { isLoggedIn, startLogin } from '../oauth'
 
 export default function Home() {

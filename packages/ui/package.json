@@ -1,5 +1,5 @@
 {
-  "name": "@ui",
+  "name": "@oauth-sample/ui",
   "private": true,
   "type": "module",
   "exports": {
