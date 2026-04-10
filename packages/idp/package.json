@@ -8,7 +8,7 @@
     "start": "react-router-serve ./build/server/index.js"
   },
   "dependencies": {
-    "@oauth-sample/ui": "*",
+    "@oauth-sample/ui": "workspace:*",
     "@hookform/resolvers": "^5.2.2",
     "@react-router/node": "^7.0.0",
     "@react-router/serve": "^7.0.0",

@@ -1,14 +1,17 @@
 {
+  "$schema": "https://raw.githubusercontent.com/firebase/firebase-tools/refs/heads/main/schema/firebase-config.json",
   "apphosting": [
     {
       "backendId": "api",
       "rootDir": "packages/api",
-      "alwaysDeployFromSource": true
+      "alwaysDeployFromSource": true,
+      "ignore": []
     },
     {
       "backendId": "idp",
       "rootDir": "packages/idp",
-      "alwaysDeployFromSource": true
+      "alwaysDeployFromSource": true,
+      "ignore": []
     }
   ],
   "hosting": {

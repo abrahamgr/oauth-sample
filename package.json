@@ -1,10 +1,9 @@
 {
   "name": "oauth-sample",
   "private": true,
-  "workspaces": ["packages/*"],
   "scripts": {
-    "dev": "bun run --filter='*' dev",
-    "build": "bun run --filter='*' build",
+    "dev": "pnpm --filter='*' run dev",
+    "build": "pnpm --filter='*' run build",
     "lint": "biome check .",
     "format": "biome format --write .",
     "check": "biome check --write",
@@ -14,5 +13,11 @@
     "@biomejs/biome": "^1.9.0",
     "lefthook": "^2.1.5",
     "typescript": "^6.0.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "lefthook"]
+  },
+  "engines": {
+    "pnpm": ">=10"
   }
 }
