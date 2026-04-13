@@ -40,3 +40,6 @@ bun.lockb
 
 # GCP
 sa-key.json
+
+# turborepo
+.turbo
