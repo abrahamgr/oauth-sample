@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import { config } from '../config'
+import { verifyPassword } from '../crypto'
 import { findUserByEmail } from '../db'
 import { internalVerifyBodySchema } from '../schemas'
 
@@ -26,7 +27,7 @@ export async function internalRoutes(app: FastifyInstance) {
       return reply.status(401).send({ error: 'Invalid credentials' })
     }
 
-    const valid = await Bun.password.verify(password, user.password_hash)
+    const valid = await verifyPassword(password, user.password_hash)
     if (!valid) {
       return reply.status(401).send({ error: 'Invalid credentials' })
     }

@@ -13,8 +13,8 @@ A hands-on implementation of the **Authorization Code + PKCE** flow built from s
 
 ## Stack
 
-- **Runtime**: Bun
-- **API**: Fastify, SQLite via Drizzle ORM
+- **Runtime**: Node.js
+- **API**: Fastify, PostgreSQL via Drizzle ORM
 - **IDP**: React Router v7 (SSR framework mode), react-hook-form + Zod
 - **App**: Vite, React Router v7 (SPA mode)
 - **UI**: Shared component library (`@ui`) — AppHeader, AppShell, form components, theme system
@@ -25,9 +25,9 @@ A hands-on implementation of the **Authorization Code + PKCE** flow built from s
 ## Getting Started
 
 ```bash
-bun install
+pnpm install
 docker compose up -d  # start Mailpit (needed for password reset emails)
-bun run dev
+pnpm run dev
 ```
 
 Then open [http://localhost:3000](http://localhost:3000). Password reset emails can be inspected at [http://localhost:8025](http://localhost:8025) (Mailpit UI).
@@ -96,7 +96,7 @@ packages/
 │   └── src/
 │       ├── config.ts          # env vars (incl. SMTP), registered OAuth clients
 │       ├── schemas.ts         # Zod validation schemas for all routes
-│       ├── crypto.ts          # PKCE verification (Bun.CryptoHasher)
+│       ├── crypto.ts          # PKCE verification
 │       ├── email.ts           # Nodemailer transport + sendPasswordResetEmail()
 │       ├── db/
 │       │   ├── schema.ts      # Drizzle table definitions (incl. passwordResetTokens)
@@ -180,7 +180,7 @@ Deployments are triggered manually from GitHub Actions (Actions → Deploy to Fi
 |---|---|
 | `app` | Firebase Hosting (static SPA) |
 | `idp` | Firebase App Hosting (SSR) |
-| `api` | Firebase App Hosting (Bun, via Dockerfile) |
+| `api` | Firebase App Hosting (Node.js, via Dockerfile) |
 | DB | Neon — Drizzle migrations run in CI |
 
 ### One-Time Firebase Setup
@@ -203,7 +203,7 @@ Deployments are triggered manually from GitHub Actions (Actions → Deploy to Fi
    firebase apphosting:backends:create --project YOUR_PROJECT_ID
    # When prompted: name it "idp", root directory → packages/idp
 
-   # API backend — Fastify (Bun, Dockerfile)
+   # API backend — Fastify (Node.js, Dockerfile)
    firebase apphosting:backends:create --project YOUR_PROJECT_ID
    # When prompted: name it "api", root directory → packages/api
    ```

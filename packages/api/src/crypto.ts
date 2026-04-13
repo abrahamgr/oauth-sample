@@ -1,3 +1,8 @@
+import { createHash, randomBytes, scrypt, timingSafeEqual } from 'node:crypto'
+import { promisify } from 'node:util'
+
+const scryptAsync = promisify(scrypt)
+
 /**
  * PKCE (Proof Key for Code Exchange) helpers.
  *
@@ -15,15 +20,32 @@ export function verifyPKCE(
   codeVerifier: string,
   storedChallenge: string,
 ): boolean {
-  const hasher = new Bun.CryptoHasher('sha256')
-  hasher.update(codeVerifier)
-  const digest = hasher.digest('base64')
+  const digest = createHash('sha256').update(codeVerifier).digest('base64url')
+  return digest === storedChallenge
+}
 
-  // Convert standard base64 → base64url
-  const challenge = digest
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '')
+/**
+ * Hash a password using scrypt.
+ */
+export async function hashPassword(password: string): Promise<string> {
+  const salt = randomBytes(16).toString('hex')
+  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer
+  return `${salt}:${derivedKey.toString('hex')}`
+}
 
-  return challenge === storedChallenge
+/**
+ * Verify a password against a stored scrypt hash.
+ */
+export async function verifyPassword(
+  password: string,
+  hash: string,
+): Promise<boolean> {
+  const [salt, key] = hash.split(':')
+  if (!salt || !key) return false
+
+  const keyBuffer = Buffer.from(key, 'hex')
+  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer
+
+  if (keyBuffer.length !== derivedKey.length) return false
+  return timingSafeEqual(keyBuffer, derivedKey)
 }

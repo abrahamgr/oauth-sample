@@ -6,27 +6,27 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 ```bash
 # Start all three services in parallel
-bun run dev
+pnpm run dev
 
 # Lint (read-only)
-bun run lint
+pnpm run lint
 
 # Lint + auto-fix
-bun run check
+pnpm run check
 
 # Format only
-bun run format
+pnpm run format
 
 # Run a single package
-bun run --filter=api dev
-bun run --filter=idp dev
-bun run --filter=app dev
+pnpm --filter api run dev
+pnpm --filter idp run dev
+pnpm --filter app run dev
 
-# Push Drizzle schema to SQLite (api package only, no migration history)
-cd packages/api && bun run db:push
+# Push Drizzle schema to Postgres (api package only, no migration history)
+cd packages/api && pnpm run db:push
 
 # Run tracked Drizzle migrations (api package only)
-cd packages/api && bun run db:migrate
+cd packages/api && pnpm run db:migrate
 
 # Start Mailpit SMTP server (required for password reset emails)
 docker compose up -d
@@ -36,13 +36,13 @@ No test suite exists yet. There are no test commands.
 
 ## Code Style
 
-BiomeJS enforces: single quotes, double quotes in JSX attributes, no semicolons, trailing commas, 2-space indent. Running `bun run check` auto-fixes formatting. Do not add `.js` extensions to relative imports — all packages use `moduleResolution: bundler` and Bun/Vite resolve TypeScript natively.
+BiomeJS enforces: single quotes, double quotes in JSX attributes, no semicolons, trailing commas, 2-space indent. Running `pnpm run check` auto-fixes formatting. Do not add `.js` extensions to relative imports — all packages use `moduleResolution: bundler`.
 
 Consumer packages (`app`, `idp`) must include a `@source` directive in their CSS entry point so Tailwind v4 scans `@ui` component files for utility classes (`@source "../../ui/src"` from `app/src/`, `@source "../../ui/src"` from `idp/app/`). Do not use `@apply` inside `packages/ui/src/index.css` — it is imported as a plain CSS file and Tailwind does not process `@apply` in non-entry stylesheets.
 
 ## Architecture
 
-Three Bun packages in a workspace, each running on a fixed port:
+Three packages in a pnpm workspace, each running on a fixed port:
 
 | Package | Port | Role |
 |---|---|---|
@@ -75,9 +75,9 @@ Logout: `app/src/oauth.ts:logout()` clears `sessionStorage` then redirects to `i
 - `src/config.ts` — env vars + static OAuth client registry (`registeredClients`)
 - `src/config.ts` — env vars (including SMTP config) + static OAuth client registry
 - `src/db/schema.ts` — Drizzle table definitions (`users`, `oauthCodes`, `oauthTokens`, `passwordResetTokens`)
-- `src/db/index.ts` — Drizzle client (bun:sqlite) + all query helper functions
+- `src/db/index.ts` — Drizzle client (postgres.js) + all query helper functions
 - `src/schemas.ts` — Zod schemas for all route inputs; import from here for validation
-- `src/crypto.ts` — `verifyPKCE(verifier, challenge)` using `Bun.CryptoHasher`
+- `src/crypto.ts` — `verifyPKCE(verifier, challenge)`
 - `src/email.ts` — Nodemailer transport + `sendPasswordResetEmail(to, token)`
 - `src/emails/password-reset.ts` — HTML email template for password reset
 - `src/routes/password-reset.ts` — `POST /password-reset/request` (sends email) and `POST /password-reset/confirm` (validates token, updates password)

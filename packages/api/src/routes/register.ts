@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import { config } from '../config'
+import { hashPassword } from '../crypto'
 import { createUser, findUserByEmail } from '../db'
 import { registerBodySchema } from '../schemas'
 
@@ -28,7 +29,7 @@ export async function registerRoutes(app: FastifyInstance) {
         .send({ error: 'A user with that email already exists' })
     }
 
-    const passwordHash = await Bun.password.hash(password)
+    const passwordHash = await hashPassword(password)
     const id = crypto.randomUUID()
 
     await createUser({ id, email, password_hash: passwordHash, name })

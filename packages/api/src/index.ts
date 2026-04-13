@@ -1,3 +1,4 @@
+import { config as dotenvConfig } from 'dotenv'
 import Fastify from 'fastify'
 import { config } from './config'
 import {
@@ -16,7 +17,17 @@ import { registerRoutes } from './routes/register'
 import { tokenRoutes } from './routes/token'
 import { userinfoRoutes } from './routes/userinfo'
 
-const app = Fastify({ logger: { level: 'info' } })
+dotenvConfig()
+
+const app = Fastify({
+  logger: {
+    level: 'info',
+    transport:
+      process.env.NODE_ENV === 'development'
+        ? { target: 'pino-pretty' }
+        : undefined,
+  },
+})
 
 // ── Plugins ───────────────────────────────────────────────────────────────────
 

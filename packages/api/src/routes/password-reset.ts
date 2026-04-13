@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import { config } from '../config'
+import { hashPassword } from '../crypto'
 import {
   createResetToken,
   deleteUserTokens,
@@ -87,7 +88,7 @@ export async function passwordResetRoutes(app: FastifyInstance) {
         return reply.status(400).send({ error: 'invalid_token: expired' })
       }
 
-      const passwordHash = await Bun.password.hash(password)
+      const passwordHash = await hashPassword(password)
       await updateUserPassword(storedToken.user_id, passwordHash)
       await markResetTokenUsed(token)
       await deleteUserTokens(storedToken.user_id)
