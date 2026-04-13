@@ -9,7 +9,7 @@ import { generateChallenge, generateVerifier } from './pkce'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
 export const IDP_URL = import.meta.env.VITE_IDP_URL ?? 'http://localhost:3002'
-const CLIENT_ID = import.meta.env.VITE_CLIENT_ID ?? 'oauth-sample-app'
+const CLIENT_ID = 'oauth-sample-app'
 const REDIRECT_URI = `${window.location.origin}/callback`
 
 const STORAGE_KEYS = {

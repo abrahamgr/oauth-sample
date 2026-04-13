@@ -43,3 +43,6 @@ sa-key.json
 
 # turborepo
 .turbo
+
+# firebase
+.firebase

@@ -6,10 +6,6 @@ runConfig:
   minInstances: 0
   maxInstances: 10
 
-scripts:
-  buildCommand: pnpm --filter idp run build
-  runCommand: pnpm --filter idp run start
-
 env:
   - variable: API_URL
     secret: API_URL
