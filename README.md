@@ -152,7 +152,7 @@ All variables have working defaults for local development — no `.env` file is 
 | `JWT_SECRET` | *(insecure default)* | Signs access tokens |
 | `SESSION_SECRET` | *(insecure default)* | Verifies idp_session cookies — must match IDP |
 | `INTERNAL_SECRET` | `internal-api-secret` | Guards `/register` and `/internal/*` |
-| `IDP_URL` | `http://localhost:3002` | Where to redirect unauthenticated users |
+| `IDP_URL` | `http://localhost:3000/idp` | Where to redirect unauthenticated users |
 | `APP_URL` | `http://localhost:3000` | Allowed CORS origin |
 | `SMTP_HOST` | `localhost` | Mailpit SMTP host |
 | `SMTP_PORT` | `1025` | Mailpit SMTP port |
@@ -163,13 +163,12 @@ All variables have working defaults for local development — no `.env` file is 
 |---|---|---|
 | `SESSION_SECRET` | *(insecure default)* | Signs idp_session cookies — must match API |
 | `INTERNAL_SECRET` | `internal-api-secret` | Sent as `X-Internal-Secret` to the API |
-| `API_URL` | `http://localhost:3001` | API base URL |
+| `API_URL` | `http://localhost:3000/api` | API base URL |
 
 **`packages/app`**
 | Variable | Default | Description |
 |---|---|---|
-| `VITE_API_URL` | `http://localhost:3001` | API base URL |
-| `VITE_IDP_URL` | `http://localhost:3002` | IDP base URL (used for logout redirect) |
+| `VITE_IDP_URL` | `http://localhost:3000/idp` | IDP base URL (used for logout redirect) |
 | `VITE_CLIENT_ID` | `oauth-sample-app` | Registered client ID |
 
 ## Deployment
@@ -284,7 +283,23 @@ Deployments are triggered manually from GitHub Actions (Actions → Deploy to Fi
    | `FIREBASE_IDP_BACKEND_ID` | Backend ID from step 4 (idp) |
    | `FIREBASE_API_BACKEND_ID` | Backend ID from step 4 (api) |
    | `DATABASE_URL` | Neon connection string (for Drizzle migrations) |
-   | `VITE_API_URL` | Production API URL |
    | `VITE_CLIENT_ID` | OAuth client ID |
 
    > Per-service secrets (`JWT_SECRET`, `SESSION_SECRET`, etc.) live in Firebase Secret Manager — no need to duplicate them in GitHub secrets.
+
+8. ** Make API public **
+
+```bash
+# Replace PROJECT_ID and REGION with your values
+gcloud run services add-iam-policy-binding api \
+  --project=$PROJECT_ID \
+  --region=us-east4 \
+  --member="allUsers" \
+  --role="roles/run.invoker"
+
+gcloud run services add-iam-policy-binding idp \
+  --project=$PROJECT_ID \
+  --region=us-east4 \
+  --member="allUsers" \
+  --role="roles/run.invoker"
+```

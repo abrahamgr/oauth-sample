@@ -2,11 +2,12 @@
   "name": "oauth-sample",
   "private": true,
   "scripts": {
-    "dev": "turbo run dev",
     "build": "turbo run build",
-    "lint": "biome check .",
-    "format": "biome format --write .",
     "check": "biome check --write",
+    "clean:build": "rm -rf ./turbo ./packages/*/.turbo ./packages/*/dist ./packages/*/build",
+    "dev": "turbo run dev",
+    "format": "biome format --write .",
+    "lint": "biome check .",
     "prepare": "lefthook install || true"
   },
   "devDependencies": {

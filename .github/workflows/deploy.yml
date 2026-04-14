@@ -43,7 +43,6 @@ jobs:
         run: bun run build
         working-directory: packages/app
         env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
       - uses: actions/setup-node@v4
         with:

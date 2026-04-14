@@ -1,6 +1,3 @@
-kind: "AppStack"
-schemaVersion: "v1"
-
 scripts:
   runCommand: node ./packages/api/dist/index.mjs
   

@@ -7,8 +7,8 @@
 
 import { generateChallenge, generateVerifier } from './pkce'
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
-export const IDP_URL = import.meta.env.VITE_IDP_URL ?? 'http://localhost:3002'
+const API_URL = '/api'
+export const IDP_URL = '/idp'
 const CLIENT_ID = 'oauth-sample-app'
 const REDIRECT_URI = `${window.location.origin}/callback`
 
@@ -139,5 +139,5 @@ export function isLoggedIn(): boolean {
 /** Clear the local token and redirect to the IDP to clear the session cookie. */
 export function logout(): void {
   sessionStorage.removeItem(STORAGE_KEYS.token)
-  window.location.href = `${IDP_URL}/logout?redirect=${encodeURIComponent('http://localhost:3000')}`
+  window.location.href = `${IDP_URL}/logout?redirect=${encodeURIComponent(window.location.origin)}`
 }

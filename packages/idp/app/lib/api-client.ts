@@ -2,8 +2,10 @@
 // All calls include the X-Internal-Secret header so the API knows
 // this request is coming from a trusted internal service.
 
-const API_URL = process.env.API_URL ?? 'http://localhost:3001'
-const INTERNAL_SECRET = process.env.INTERNAL_SECRET ?? 'internal-api-secret'
+// biome-ignore lint/style/noNonNullAssertion: <explanation>
+const API_URL = process.env.API_URL!
+// biome-ignore lint/style/noNonNullAssertion: <explanation>
+const INTERNAL_SECRET = process.env.INTERNAL_SECRET!
 
 const internalHeaders = {
   'Content-Type': 'application/json',

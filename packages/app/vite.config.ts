@@ -16,5 +16,17 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        headers: {
+          'x-forwarded-host': 'localhost:3000',
+          'x-forwarded-proto': 'http',
+        },
+      },
+      '/idp': {
+        target: 'http://localhost:3002',
+      },
+    },
   },
 })

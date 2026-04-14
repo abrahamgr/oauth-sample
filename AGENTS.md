@@ -99,7 +99,6 @@ Logout: `app/src/oauth.ts:logout()` clears `sessionStorage` then redirects to `i
 - SPA mode (no SSR). Uses `createBrowserRouter` in `src/App.tsx`.
 - `src/pkce.ts` — generates PKCE verifier/challenge using Web Crypto API (`window.crypto.subtle`)
 - `src/oauth.ts` — all OAuth flow functions; PKCE state and access token stored in `sessionStorage`
-- `VITE_IDP_URL`, `VITE_API_URL`, `VITE_CLIENT_ID` are the relevant env vars
 
 ### UI Package (`packages/ui`)
 

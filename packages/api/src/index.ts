@@ -38,12 +38,17 @@ await registerRateLimit(app)
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 
-await app.register(authorizeRoutes)
-await app.register(tokenRoutes)
-await app.register(userinfoRoutes)
-await app.register(registerRoutes)
-await app.register(internalRoutes)
-await app.register(passwordResetRoutes)
+await app.register(
+  async (api) => {
+    await api.register(authorizeRoutes)
+    await api.register(tokenRoutes)
+    await api.register(userinfoRoutes)
+    await api.register(registerRoutes)
+    await api.register(internalRoutes)
+    await api.register(passwordResetRoutes)
+  },
+  { prefix: '/api' },
+)
 
 // ── Cleanup ───────────────────────────────────────────────────────────────────
 
