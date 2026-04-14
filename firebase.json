@@ -3,19 +3,19 @@
   "apphosting": [
     {
       "backendId": "api",
-      "rootDir": "packages/api",
+      "rootDir": "apps/api",
       "alwaysDeployFromSource": true,
       "ignore": []
     },
     {
       "backendId": "idp",
-      "rootDir": "packages/idp",
+      "rootDir": "apps/idp",
       "alwaysDeployFromSource": true,
       "ignore": []
     }
   ],
   "hosting": {
-    "public": "packages/app/dist",
+    "public": "apps/app/dist",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {

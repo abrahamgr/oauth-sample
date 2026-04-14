@@ -1,5 +1,5 @@
 {
-  "name": "api",
+  "name": "@oauth-sample/api",
   "private": true,
   "scripts": {
     "dev": "vite-node --watch src/index.ts",

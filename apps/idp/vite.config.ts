@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
     alias: {
       '@oauth-sample/ui/index.css': path.resolve(
         __dirname,
-        '../ui/src/index.css',
+        '../../packages/ui/src/index.css',
       ),
     },
   },

@@ -18,15 +18,15 @@ pnpm run check
 pnpm run format
 
 # Run a single package
-pnpm --filter api run dev
-pnpm --filter idp run dev
-pnpm --filter app run dev
+pnpm --filter @oauth-sample/api run dev
+pnpm --filter @oauth-sample/idp run dev
+pnpm --filter @oauth-sample/app run dev
 
 # Push Drizzle schema to Postgres (api package only, no migration history)
-cd packages/api && pnpm run db:push
+cd apps/api && pnpm run db:push
 
 # Run tracked Drizzle migrations (api package only)
-cd packages/api && pnpm run db:migrate
+cd apps/api && pnpm run db:migrate
 
 # Start Mailpit SMTP server (required for password reset emails)
 docker compose up -d
@@ -46,9 +46,9 @@ Three packages in a pnpm workspace, each running on a fixed port:
 
 | Package | Port | Role |
 |---|---|---|
-| `packages/api` | 3001 | Fastify OAuth Authorization Server |
-| `packages/idp` | 3002 | React Router v7 SSR Identity Provider (login/register UI) |
-| `packages/app` | 3000 | Vite + React SPA (OAuth client) |
+| `apps/api` | 3001 | Fastify OAuth Authorization Server |
+| `apps/idp` | 3002 | React Router v7 SSR Identity Provider (login/register UI) |
+| `apps/app` | 3000 | Vite + React SPA (OAuth client) |
 | `packages/ui` | — | Shared component library (components, theme, CSS) |
 
 ### OAuth 2.0 PKCE Flow
@@ -70,7 +70,7 @@ The `__session` cookie is a short-lived (10 min) HS256 JWT signed with `SESSION_
 
 Logout: `app/src/oauth.ts:logout()` clears `sessionStorage` then redirects to `idp:3002/logout`, which sets `Max-Age=0` on the `__session` cookie before redirecting back to the app.
 
-### API Package (`packages/api`)
+### API Package (`apps/api`)
 
 - `src/config.ts` — env vars + static OAuth client registry (`registeredClients`)
 - `src/config.ts` — env vars (including SMTP config) + static OAuth client registry
@@ -84,17 +84,17 @@ Logout: `app/src/oauth.ts:logout()` clears `sessionStorage` then redirects to `i
 - `drizzle/` — tracked migration SQL files; apply with `db:migrate`
 - Routes are protected by `X-Internal-Secret` header for `/register` and `/internal/*`
 
-### IDP Package (`packages/idp`)
+### IDP Package (`apps/idp`)
 
 - Framework mode React Router v7 (SSR). Routes are defined in `app/routes.ts`.
 - `app/sessions.server.ts` — `signSession(userId)` / `buildSessionCookie(token)` — signs the `__session` JWT
-- `app/lib/api-client.ts` — server-side fetch wrapper to `packages/api` with `X-Internal-Secret`
+- `app/lib/api-client.ts` — server-side fetch wrapper to `apps/api` with `X-Internal-Secret`
 - `app/lib/schemas.ts` — Zod schemas (`loginSchema`, `registerSchema`, `forgotPasswordSchema`, `resetPasswordSchema`) shared between server actions and react-hook-form
 - `app/routes/forgot-password.tsx` — email submission form; calls `POST /password-reset/request`
 - `app/routes/reset-password.tsx` — new password form; calls `POST /password-reset/confirm` with token from URL query param
 - Forms use react-hook-form with `zodResolver` for client-side validation. Form submission uses `useSubmit(formRef.current, { method: 'post' })` (submits the actual DOM form element, not a plain object) so React Router's action receives proper `FormData`.
 
-### App Package (`packages/app`)
+### App Package (`apps/app`)
 
 - SPA mode (no SSR). Uses `createBrowserRouter` in `src/App.tsx`.
 - `src/pkce.ts` — generates PKCE verifier/challenge using Web Crypto API (`window.crypto.subtle`)

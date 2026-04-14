@@ -1,5 +1,5 @@
 scripts:
-  runCommand: node ./packages/api/dist/index.mjs
+  runCommand: node ./apps/api/dist/index.mjs
   
 runConfig:
   runtime: nodejs24

@@ -36,7 +36,7 @@ Then open [http://localhost:3000](http://localhost:3000). Password reset emails 
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                      packages/app                        │
+│                      apps/app                        │
 │                   http://localhost:3000                  │
 └────────────────────────┬────────────────────────────────┘
                          │ 1. Click "Login with OAuth"
@@ -44,14 +44,14 @@ Then open [http://localhost:3000](http://localhost:3000). Password reset emails 
                          │    store verifier in sessionStorage
                          ▼
 ┌─────────────────────────────────────────────────────────┐
-│                      packages/api                        │
+│                      apps/api                        │
 │         GET /authorize?code_challenge=...               │
 │                   http://localhost:3001                  │
 └────────────────────────┬────────────────────────────────┘
                          │ 2. No session cookie → redirect to IDP
                          ▼
 ┌─────────────────────────────────────────────────────────┐
-│                      packages/idp                        │
+│                      apps/idp                        │
 │                  GET /login?redirect=...                 │
 │                   http://localhost:3002                  │
 └────────────────────────┬────────────────────────────────┘
@@ -61,14 +61,14 @@ Then open [http://localhost:3000](http://localhost:3000). Password reset emails 
                          │    Redirect back to /authorize
                          ▼
 ┌─────────────────────────────────────────────────────────┐
-│                      packages/api                        │
+│                      apps/api                        │
 │         GET /authorize (session cookie present)         │
 └────────────────────────┬────────────────────────────────┘
                          │ 4. Issue auth code
                          │    Redirect to app /callback?code=...
                          ▼
 ┌─────────────────────────────────────────────────────────┐
-│                      packages/app                        │
+│                      apps/app                        │
 │                     GET /callback                        │
 └────────────────────────┬────────────────────────────────┘
                          │ 5. Exchange code + verifier
@@ -90,7 +90,7 @@ After the user logs in on the IDP, it sets an `__session` cookie containing a sh
 ## Project Structure
 
 ```
-packages/
+apps/
 ├── api/
 │   ├── drizzle/               # tracked migration SQL files
 │   └── src/
@@ -114,7 +114,7 @@ packages/
 │   └── app/
 │       ├── sessions.server.ts # sign/build __session cookie
 │       ├── lib/
-│       │   ├── api-client.ts  # server-to-server calls to packages/api
+│       │   ├── api-client.ts  # server-to-server calls to apps/api
 │       │   └── schemas.ts     # Zod schemas for login/register/password-reset forms
 │       └── routes/
 │           ├── login.tsx
@@ -122,15 +122,17 @@ packages/
 │           ├── forgot-password.tsx  # email submission form
 │           ├── reset-password.tsx   # new password form (token from query param)
 │           └── logout.ts      # clears __session cookie
-├── app/
-│   └── src/
-│       ├── pkce.ts            # generateVerifier / generateChallenge
-│       ├── oauth.ts           # startLogin, exchangeCode, fetchUserInfo, logout
-│       └── pages/
-│           ├── Home.tsx
-│           ├── Callback.tsx
-│           ├── Success.tsx
-│           └── Profile.tsx
+└── app/
+    └── src/
+        ├── pkce.ts            # generateVerifier / generateChallenge
+        ├── oauth.ts           # startLogin, exchangeCode, fetchUserInfo, logout
+        └── pages/
+            ├── Home.tsx
+            ├── Callback.tsx
+            ├── Success.tsx
+            └── Profile.tsx
+
+packages/
 └── ui/
     └── src/
         ├── index.ts           # package entry — exports all components + theme
@@ -145,7 +147,7 @@ packages/
 
 All variables have working defaults for local development — no `.env` file is required to get started.
 
-**`packages/api`**
+**`apps/api`**
 | Variable | Default | Description |
 |---|---|---|
 | `PORT` | `3001` | API server port |
@@ -158,14 +160,14 @@ All variables have working defaults for local development — no `.env` file is 
 | `SMTP_PORT` | `1025` | Mailpit SMTP port |
 | `SMTP_FROM` | `noreply@oauth-sample.local` | From address for password reset emails |
 
-**`packages/idp`**
+**`apps/idp`**
 | Variable | Default | Description |
 |---|---|---|
 | `SESSION_SECRET` | *(insecure default)* | Signs __session cookies — must match API |
 | `INTERNAL_SECRET` | `internal-api-secret` | Sent as `X-Internal-Secret` to the API |
 | `API_URL` | `http://localhost:3000/api` | API base URL |
 
-**`packages/app`**
+**`apps/app`**
 | Variable | Default | Description |
 |---|---|---|
 | `VITE_IDP_URL` | `http://localhost:3000/idp` | IDP base URL (used for logout redirect) |
@@ -200,11 +202,11 @@ Deployments are triggered manually from GitHub Actions (Actions → Deploy to Fi
    ```bash
    # IDP backend — React Router v7 SSR
    firebase apphosting:backends:create --project YOUR_PROJECT_ID
-   # When prompted: name it "idp", root directory → packages/idp
+   # When prompted: name it "idp", root directory → apps/idp
 
    # API backend — Fastify (Node.js, Dockerfile)
    firebase apphosting:backends:create --project YOUR_PROJECT_ID
-   # When prompted: name it "api", root directory → packages/api
+   # When prompted: name it "api", root directory → apps/api
    ```
 
 4. **Note the backend IDs**

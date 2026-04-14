@@ -21,7 +21,7 @@ importers:
         specifier: ^6.0.2
         version: 6.0.2
 
-  packages/api:
+  apps/api:
     dependencies:
       '@fastify/cookie':
         specifier: ^11.0.0
@@ -76,11 +76,11 @@ importers:
         specifier: ^6.0.2
         version: 6.0.2
 
-  packages/app:
+  apps/app:
     dependencies:
       '@oauth-sample/ui':
         specifier: workspace:*
-        version: link:../ui
+        version: link:../../packages/ui
       react:
         specifier: ^19.0.0
         version: 19.2.5
@@ -116,14 +116,14 @@ importers:
         specifier: ^5.0.0
         version: 5.1.4(typescript@6.0.2)(vite@6.4.2(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0))
 
-  packages/idp:
+  apps/idp:
     dependencies:
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.72.1(react@19.2.5))
       '@oauth-sample/ui':
         specifier: workspace:*
-        version: link:../ui
+        version: link:../../packages/ui
       '@react-router/node':
         specifier: ^7.0.0
         version: 7.14.0(react-router@7.14.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(typescript@6.0.2)
