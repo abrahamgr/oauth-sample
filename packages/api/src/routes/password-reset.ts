@@ -25,11 +25,21 @@ export async function passwordResetRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const secret = request.headers['x-internal-secret']
       if (secret !== config.internalSecret) {
+        request.log.warn(
+          'Forbidden: invalid x-internal-secret in /forgot-password',
+        )
         return reply.status(403).send({ error: 'Forbidden' })
       }
 
       const parsed = forgotPasswordSchema.safeParse(request.body)
       if (!parsed.success) {
+        request.log.warn(
+          {
+            errors: parsed.error.flatten().fieldErrors,
+            email: (request.body as unknown as { email?: string })?.email,
+          },
+          'Validation failed for /forgot-password',
+        )
         return reply.status(400).send({
           error: 'invalid_request',
           details: parsed.error.flatten().fieldErrors,
@@ -62,11 +72,18 @@ export async function passwordResetRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const secret = request.headers['x-internal-secret']
       if (secret !== config.internalSecret) {
+        request.log.warn(
+          'Forbidden: invalid x-internal-secret in /reset-password',
+        )
         return reply.status(403).send({ error: 'Forbidden' })
       }
 
       const parsed = resetPasswordSchema.safeParse(request.body)
       if (!parsed.success) {
+        request.log.warn(
+          { errors: parsed.error.flatten().fieldErrors },
+          'Validation failed for /reset-password',
+        )
         return reply.status(400).send({
           error: 'invalid_request',
           details: parsed.error.flatten().fieldErrors,
@@ -77,14 +94,23 @@ export async function passwordResetRoutes(app: FastifyInstance) {
 
       const storedToken = await findResetToken(token)
       if (!storedToken) {
+        request.log.warn('Reset token not found')
         return reply.status(400).send({ error: 'invalid_token' })
       }
 
       if (storedToken.used_at !== null) {
+        request.log.warn(
+          { user_id: storedToken.user_id },
+          'Reset token already used',
+        )
         return reply.status(400).send({ error: 'invalid_token: already used' })
       }
 
       if (storedToken.expires_at < Date.now()) {
+        request.log.warn(
+          { user_id: storedToken.user_id },
+          'Reset token expired',
+        )
         return reply.status(400).send({ error: 'invalid_token: expired' })
       }
 

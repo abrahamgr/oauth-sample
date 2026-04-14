@@ -13,6 +13,7 @@ export async function userinfoRoutes(app: FastifyInstance) {
     const authHeader = request.headers.authorization
 
     if (!authHeader?.startsWith('Bearer ')) {
+      request.log.warn('Missing or invalid Authorization header in /userinfo')
       return reply
         .status(401)
         .header('WWW-Authenticate', 'Bearer realm="oauth-sample"')
@@ -29,7 +30,8 @@ export async function userinfoRoutes(app: FastifyInstance) {
         audience: 'oauth-sample-app',
       })
       userId = payload.sub as string
-    } catch {
+    } catch (err) {
+      request.log.warn({ err }, 'JWT verification failed in /userinfo')
       return reply
         .status(401)
         .header('WWW-Authenticate', 'Bearer error="invalid_token"')
@@ -38,6 +40,10 @@ export async function userinfoRoutes(app: FastifyInstance) {
 
     const user = await findUserById(userId)
     if (!user) {
+      request.log.warn(
+        { userId },
+        'User not found in /userinfo for valid token',
+      )
       return reply.status(404).send({ error: 'user_not_found' })
     }
 

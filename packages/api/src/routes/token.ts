@@ -34,6 +34,18 @@ export async function tokenRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const parsed = tokenBodySchema.safeParse(request.body)
       if (!parsed.success) {
+        request.log.warn(
+          {
+            errors: parsed.error.flatten().fieldErrors,
+            body: {
+              ...(request.body as object),
+              refresh_token: '***',
+              code: '***',
+              code_verifier: '***',
+            },
+          },
+          'Validation failed for /token',
+        )
         return reply.status(400).send({
           error: 'invalid_request',
           details: parsed.error.flatten().fieldErrors,
@@ -49,12 +61,14 @@ export async function tokenRoutes(app: FastifyInstance) {
 
         const storedToken = await findTokenByRefreshToken(refresh_token)
         if (!storedToken) {
+          request.log.warn({ client_id }, 'Refresh token not found')
           return reply
             .status(400)
             .send({ error: 'invalid_grant: refresh token not found' })
         }
 
         if (storedToken.expires_at < Date.now()) {
+          request.log.warn({ client_id }, 'Refresh token expired')
           await deleteToken(refresh_token)
           return reply
             .status(400)
@@ -62,6 +76,10 @@ export async function tokenRoutes(app: FastifyInstance) {
         }
 
         if (storedToken.client_id !== client_id) {
+          request.log.warn(
+            { client_id, expected: storedToken.client_id },
+            'Refresh token client_id mismatch',
+          )
           return reply
             .status(400)
             .send({ error: 'invalid_grant: client_id mismatch' })
@@ -102,24 +120,34 @@ export async function tokenRoutes(app: FastifyInstance) {
 
       const storedCode = await findCode(code)
       if (!storedCode) {
+        request.log.warn({ client_id }, 'Authorization code not found')
         return reply
           .status(400)
           .send({ error: 'invalid_grant: code not found' })
       }
 
       if (storedCode.client_id !== client_id) {
+        request.log.warn(
+          { client_id, expected: storedCode.client_id },
+          'Auth code client_id mismatch',
+        )
         return reply
           .status(400)
           .send({ error: 'invalid_grant: client_id mismatch' })
       }
 
       if (storedCode.redirect_uri !== redirect_uri) {
+        request.log.warn(
+          { redirect_uri, expected: storedCode.redirect_uri },
+          'Auth code redirect_uri mismatch',
+        )
         return reply
           .status(400)
           .send({ error: 'invalid_grant: redirect_uri mismatch' })
       }
 
       if (storedCode.expires_at < Date.now()) {
+        request.log.warn({ client_id }, 'Authorization code expired')
         await deleteCode(code)
         return reply.status(400).send({ error: 'invalid_grant: code expired' })
       }
@@ -127,6 +155,7 @@ export async function tokenRoutes(app: FastifyInstance) {
       // ── Verify PKCE ───────────────────────────────────────────────────────────
 
       if (!verifyPKCE(code_verifier, storedCode.code_challenge)) {
+        request.log.warn({ client_id }, 'PKCE verification failed')
         return reply
           .status(400)
           .send({ error: 'invalid_grant: PKCE verification failed' })

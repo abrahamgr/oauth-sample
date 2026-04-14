@@ -15,6 +15,10 @@ export async function authorizeRoutes(app: FastifyInstance) {
   app.get('/authorize', async (request, reply) => {
     const parsed = authorizeQuerySchema.safeParse(request.query)
     if (!parsed.success) {
+      request.log.warn(
+        { errors: parsed.error.flatten().fieldErrors, query: request.query },
+        'Validation failed for /authorize',
+      )
       return reply.status(400).send({
         error: 'invalid_request',
         details: parsed.error.flatten().fieldErrors,
@@ -35,14 +39,14 @@ export async function authorizeRoutes(app: FastifyInstance) {
 
     const client = getClient(client_id)
     if (!client) {
-      app.log.warn(
+      request.log.warn(
         `Invalid client_id in /authorize request: ${client_id}, configured clients: ${Object.keys(registeredClients).join(',')}`,
       )
       return reply.status(400).send({ error: 'invalid_client' })
     }
 
     if (!client.allowedRedirectUris.includes(redirect_uri)) {
-      app.log.warn(
+      request.log.warn(
         `Invalid redirect_uri in /authorize request: ${redirect_uri}, allowed URIs: ${client.allowedRedirectUris.join(',')}`,
       )
       return reply.status(400).send({ error: 'invalid_redirect_uri' })
@@ -69,6 +73,10 @@ export async function authorizeRoutes(app: FastifyInstance) {
 
     if (!sessionToken) {
       // No session — send user to IDP login page.
+      request.log.warn(
+        { cookies: Object.keys(request.cookies) },
+        'No session cookie found',
+      )
       // The IDP will redirect back to this /authorize URL after login.
       return redirectToLogin()
     }
@@ -82,6 +90,7 @@ export async function authorizeRoutes(app: FastifyInstance) {
       userId = payload.sub as string
     } catch {
       // Invalid or expired session — restart login
+      request.log.warn('Invalid or expired session — restart login')
       reply.clearCookie('idp_session')
       return redirectToLogin()
     }
