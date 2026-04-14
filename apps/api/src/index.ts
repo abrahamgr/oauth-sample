@@ -5,7 +5,6 @@ import {
   deleteExpiredCodes,
   deleteExpiredResetTokens,
   deleteExpiredTokens,
-  runMigrations,
 } from './db'
 import { registerCookie } from './plugins/cookie'
 import { registerCors } from './plugins/cors'

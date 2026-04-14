@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from 'jose'
+import { jwtVerify, SignJWT } from 'jose'
 
 // SESSION_SECRET must match the API's SESSION_SECRET so that the API can
 // verify the session cookie that the IDP sets after login.

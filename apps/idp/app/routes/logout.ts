@@ -1,5 +1,5 @@
-import { redirect } from 'react-router'
 import type { LoaderFunctionArgs } from 'react-router'
+import { redirect } from 'react-router'
 import { SESSION_COOKIE_NAME } from '../sessions.server'
 
 export async function loader({ request }: LoaderFunctionArgs) {

@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@oauth-sample/ui'
-import { RouterProvider, createBrowserRouter } from 'react-router'
+import { createBrowserRouter, RouterProvider } from 'react-router'
 import AppLayout from './components/AppLayout'
 import Callback from './pages/Callback'
 import Home from './pages/Home'

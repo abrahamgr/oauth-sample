@@ -6,7 +6,7 @@ import * as schema from './schema'
 
 // ── Client ────────────────────────────────────────────────────────────────────
 
-// biome-ignore lint/style/noNonNullAssertion: <explanation>
+// biome-ignore lint/style/noNonNullAssertion: env variables required
 const DATABASE_URL = process.env.DATABASE_URL!
 
 const client = postgres(DATABASE_URL)

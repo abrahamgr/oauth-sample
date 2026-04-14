@@ -1,17 +1,18 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.12/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
     "useIgnoreFile": true
   },
   "files": {
-    "ignore": [
-      "**/node_modules",
-      "**/build",
-      "**/dist",
-      "**/.react-router",
-      "**/.vite"
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/build",
+      "!**/dist",
+      "!**/.react-router",
+      "!**/.vite"
     ]
   },
   "formatter": {
@@ -25,9 +26,14 @@
       "recommended": true
     }
   },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
   "overrides": [
     {
-      "include": ["packages/idp/app/root.tsx"],
+      "includes": ["**/packages/idp/app/root.tsx"],
       "linter": {
         "rules": {
           "security": {

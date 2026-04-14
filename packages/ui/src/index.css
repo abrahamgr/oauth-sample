@@ -54,11 +54,8 @@
 
 @layer base {
   html {
-    background: radial-gradient(
-        circle at top,
-        rgba(99, 102, 241, 0.18),
-        transparent 34%
-      ),
+    background:
+      radial-gradient(circle at top, rgba(99, 102, 241, 0.18), transparent 34%),
       linear-gradient(
         180deg,
         var(--bg-accent) 0%,
@@ -72,7 +69,9 @@
     min-height: 100vh;
     background: transparent;
     color: var(--text);
-    transition: background-color 160ms ease, color 160ms ease;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease;
   }
 
   #root {
@@ -122,7 +121,9 @@
   .app-toggle-option {
     color: var(--text-muted);
     cursor: pointer;
-    transition: color 150ms ease, background-color 150ms ease;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
   }
 
   .app-toggle-option:hover {
@@ -195,7 +196,9 @@
     background: linear-gradient(135deg, var(--accent), var(--accent-strong));
     color: white;
     box-shadow: 0 20px 45px rgba(79, 70, 229, 0.35);
-    transition: color 150ms ease, background-color 150ms ease;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
   }
 
   .app-button-primary:hover {
@@ -206,7 +209,9 @@
     background: var(--secondary-bg);
     color: var(--text);
     border: 1px solid var(--border);
-    transition: color 150ms ease, background-color 150ms ease;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
   }
 
   .app-button-secondary:hover {
@@ -222,7 +227,9 @@
     );
     color: white;
     box-shadow: 0 20px 45px rgba(248, 113, 113, 0.3);
-    transition: color 150ms ease, background-color 150ms ease;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease;
   }
 
   .app-button-danger:hover {
@@ -284,8 +291,10 @@
     padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
     line-height: 1.25rem;
-    transition: color 150ms ease, background-color 150ms ease, border-color
-      150ms ease;
+    transition:
+      color 150ms ease,
+      background-color 150ms ease,
+      border-color 150ms ease;
     background: var(--surface-strong);
     border: 1px solid var(--border-strong);
     color: var(--text);

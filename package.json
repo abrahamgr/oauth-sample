@@ -11,13 +11,16 @@
     "prepare": "lefthook install || true"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.0",
+    "@biomejs/biome": "^2.4.12",
     "lefthook": "^2.1.5",
     "turbo": "^2.9.6",
     "typescript": "^6.0.2"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@biomejs/biome", "lefthook"]
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "lefthook"
+    ]
   },
   "engines": {
     "pnpm": ">=10"

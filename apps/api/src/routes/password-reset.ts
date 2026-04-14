@@ -9,7 +9,6 @@ import {
   markResetTokenUsed,
   updateUserPassword,
 } from '../db'
-import { sendPasswordResetEmail } from '../email'
 import { forgotPasswordSchema, resetPasswordSchema } from '../schemas'
 
 const RESET_TOKEN_TTL_MS = 15 * 60 * 1000 // 15 minutes

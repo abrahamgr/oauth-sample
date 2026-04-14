@@ -2,9 +2,15 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, FormField, Input } from '@oauth-sample/ui'
 import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link, data, redirect } from 'react-router'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
-import { useActionData, useLoaderData, useSubmit } from 'react-router'
+import {
+  data,
+  Link,
+  redirect,
+  useActionData,
+  useLoaderData,
+  useSubmit,
+} from 'react-router'
 import { registerUser } from '../lib/api-client'
 import { getClientIp, isRateLimited } from '../lib/rate-limit.server'
 import { type RegisterFields, registerSchema } from '../lib/schemas'

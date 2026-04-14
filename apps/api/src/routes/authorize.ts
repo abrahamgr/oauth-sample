@@ -1,10 +1,10 @@
 import type { FastifyInstance } from 'fastify'
 import { jwtVerify } from 'jose'
 import {
-  SESSION_COOKIE_NAME,
   config,
   getClient,
   registeredClients,
+  SESSION_COOKIE_NAME,
 } from '../config'
 import { createCode } from '../db'
 import { authorizeQuerySchema } from '../schemas'
