@@ -7,7 +7,6 @@
     "lint": "biome check .",
     "format": "biome format --write .",
     "check": "biome check --write",
-    "start": "pnpm --filter api start",
     "prepare": "lefthook install || true"
   },
   "devDependencies": {

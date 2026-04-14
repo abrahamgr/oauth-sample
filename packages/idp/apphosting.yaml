@@ -1,3 +1,6 @@
+scripts:
+  runCommand: pnpm --filter idp run start
+
 runConfig:
   runtime: nodejs24
   concurrency: 80
@@ -5,6 +8,7 @@ runConfig:
   memoryMiB: 512
   minInstances: 0
   maxInstances: 10
+
 
 env:
   - variable: API_URL

@@ -1,3 +1,9 @@
+kind: "AppStack"
+schemaVersion: "v1"
+
+scripts:
+  runCommand: node ./packages/api/dist/index.mjs
+  
 runConfig:
   runtime: nodejs24
   concurrency: 80
@@ -5,6 +11,7 @@ runConfig:
   memoryMiB: 512
   minInstances: 0
   maxInstances: 10
+
 
 env:
   - variable: DATABASE_URL
