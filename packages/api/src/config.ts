@@ -9,13 +9,11 @@ function requireEnv(name: string): string {
 
 export const config = {
   port: Number(process.env.PORT ?? 3001),
-  jwtSecret: process.env.JWT_SECRET ?? 'jwt-secret-change-in-production-32c',
-  sessionSecret:
-    process.env.SESSION_SECRET ??
-    'session-signing-secret-change-in-production-32c',
-  internalSecret: process.env.INTERNAL_SECRET ?? 'internal-api-secret',
-  idpUrl: process.env.IDP_URL ?? 'http://localhost:3002',
-  appUrl: process.env.APP_URL ?? 'http://localhost:3000',
+  jwtSecret: requireEnv('JWT_SECRET'),
+  sessionSecret: requireEnv('SESSION_SECRET'),
+  internalSecret: requireEnv('INTERNAL_SECRET'),
+  idpUrl: requireEnv('IDP_URL'),
+  appUrl: requireEnv('APP_URL'),
   smtp: {
     host: process.env.SMTP_HOST ?? 'localhost',
     port: Number(process.env.SMTP_PORT ?? 1025),

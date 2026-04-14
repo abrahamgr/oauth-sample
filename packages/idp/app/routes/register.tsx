@@ -52,7 +52,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const sessionToken = await signSession(user.id)
     const cookie = buildSessionCookie(sessionToken)
 
-    return redirect(redirectTo || 'http://localhost:3000', {
+    return redirect(redirectTo, {
       headers: { 'Set-Cookie': cookie },
     })
   } catch (err) {

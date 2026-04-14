@@ -20,6 +20,7 @@ import { userinfoRoutes } from './routes/userinfo'
 dotenvConfig()
 
 const app = Fastify({
+  trustProxy: true,
   logger: {
     level: 'info',
     transport:

@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import { jwtVerify } from 'jose'
-import { config, getClient } from '../config'
+import { config, getClient, registeredClients } from '../config'
 import { createCode } from '../db'
 import { authorizeQuerySchema } from '../schemas'
 
@@ -35,11 +35,32 @@ export async function authorizeRoutes(app: FastifyInstance) {
 
     const client = getClient(client_id)
     if (!client) {
+      app.log.warn(
+        `Invalid client_id in /authorize request: ${client_id}, configured clients: ${Object.keys(registeredClients).join(',')}`,
+      )
       return reply.status(400).send({ error: 'invalid_client' })
     }
 
     if (!client.allowedRedirectUris.includes(redirect_uri)) {
+      app.log.warn(
+        `Invalid redirect_uri in /authorize request: ${redirect_uri}, allowed URIs: ${client.allowedRedirectUris.join(',')}`,
+      )
       return reply.status(400).send({ error: 'invalid_redirect_uri' })
+    }
+
+    const forwardedHost = request.headers['x-forwarded-host'] as
+      | string
+      | undefined
+    const host = forwardedHost || request.headers.host
+    const protocol =
+      (request.headers['x-forwarded-proto'] as string | undefined) ||
+      request.protocol
+    const authorizeUrl = `${protocol}://${host}${request.url}`
+
+    const redirectToLogin = () => {
+      const loginUrl = new URL(`${config.idpUrl}/login`)
+      loginUrl.searchParams.set('redirect', authorizeUrl)
+      return reply.redirect(loginUrl.toString())
     }
 
     // ── Check for an existing IDP session cookie ──────────────────────────────
@@ -49,15 +70,7 @@ export async function authorizeRoutes(app: FastifyInstance) {
     if (!sessionToken) {
       // No session — send user to IDP login page.
       // The IDP will redirect back to this /authorize URL after login.
-      const authorizeUrl = new URL(`http://localhost:${config.port}/authorize`)
-      authorizeUrl.search = new URLSearchParams(
-        request.query as Record<string, string>,
-      ).toString()
-
-      const loginUrl = new URL(`${config.idpUrl}/login`)
-      loginUrl.searchParams.set('redirect', authorizeUrl.toString())
-
-      return reply.redirect(loginUrl.toString())
+      return redirectToLogin()
     }
 
     // ── Verify the session JWT (signed by IDP with shared SESSION_SECRET) ─────
@@ -69,15 +82,8 @@ export async function authorizeRoutes(app: FastifyInstance) {
       userId = payload.sub as string
     } catch {
       // Invalid or expired session — restart login
-      const authorizeUrl = new URL(`http://localhost:${config.port}/authorize`)
-      authorizeUrl.search = new URLSearchParams(
-        request.query as Record<string, string>,
-      ).toString()
-
-      const loginUrl = new URL(`${config.idpUrl}/login`)
-      loginUrl.searchParams.set('redirect', authorizeUrl.toString())
-
-      return reply.clearCookie('idp_session').redirect(loginUrl.toString())
+      reply.clearCookie('idp_session')
+      return redirectToLogin()
     }
 
     // ── Issue authorization code ──────────────────────────────────────────────
