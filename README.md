@@ -266,15 +266,19 @@ Deployments are triggered manually from GitHub Actions (Actions → Deploy to Fi
 
     gcloud projects add-iam-policy-binding $PROJECT_ID \
       --member="serviceAccount:github-actions-deploy@$PROJECT_ID.iam.gserviceaccount.com" \
-      --role=roles/iam.serviceAccountTokenCreator
-
-    gcloud projects add-iam-policy-binding $PROJECT_ID \
-      --member="serviceAccount:github-actions-deploy@$PROJECT_ID.iam.gserviceaccount.com" \
       --role=roles/iam.workloadIdentityUser
 
     gcloud projects add-iam-policy-binding $PROJECT_ID \
       --member="serviceAccount:github-actions-deploy@$PROJECT_ID.iam.gserviceaccount.com" \
       --role=roles/serviceusage.apiKeysViewer
+
+    gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+      --member="serviceAccount:github-actions-deploy@$PROJECT_ID.iam.gserviceaccount.com" \
+      --role="roles/developerconnect.tokenAccessor"
+
+    gcloud projects add-iam-policy-binding "$PROJECT_ID" \
+      --member="serviceAccount:github-actions-deploy@$PROJECT_ID.iam.gserviceaccount.com" \
+      --role="roles/developerconnect.user"
 
    # Print the WIF provider resource name — copy this as your WIF_PROVIDER secret
    echo "projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/providers/github-provider"

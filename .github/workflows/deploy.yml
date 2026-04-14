@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     if: contains(github.event.inputs.services, 'db')
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v5
+      - uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - name: Run Drizzle migrations
@@ -36,15 +36,15 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: google-github-actions/auth@v2
+      - uses: actions/checkout@v6
+      - uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v5
+      - uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "pnpm"
       - run: pnpm install --frozen-lockfile
       - name: Build app
@@ -65,14 +65,14 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: google-github-actions/auth@v2
+      - uses: actions/checkout@v6
+      - uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
       - run: npm install -g firebase-tools
       - name: Deploy idp to App Hosting
         run: firebase apphosting:rollouts:create ${{ secrets.FIREBASE_IDP_BACKEND_ID }} --git-branch ${{ github.ref_name }} --project ${{ secrets.FIREBASE_PROJECT_ID }}
@@ -88,14 +88,14 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: google-github-actions/auth@v2
+      - uses: actions/checkout@v6
+      - uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
       - run: npm install -g firebase-tools
       - name: Deploy api to App Hosting
         run: firebase apphosting:rollouts:create ${{ secrets.FIREBASE_API_BACKEND_ID }} --git-branch ${{ github.ref_name }} --project ${{ secrets.FIREBASE_PROJECT_ID }}
