@@ -17,7 +17,7 @@
     "typescript": "^6.0.2"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "lefthook"]
+    "onlyBuiltDependencies": ["@biomejs/biome", "lefthook"]
   },
   "engines": {
     "pnpm": ">=10"

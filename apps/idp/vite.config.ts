@@ -2,7 +2,6 @@ import path from 'node:path'
 import { reactRouter } from '@react-router/dev/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig(({ mode }) => ({
   // requires trailing slash for loading assets properly in production
@@ -11,6 +10,7 @@ export default defineConfig(({ mode }) => ({
     port: 3002,
   },
   resolve: {
+    tsconfigPaths: true,
     alias: {
       '@oauth-sample/ui/index.css': path.resolve(
         __dirname,
@@ -18,5 +18,5 @@ export default defineConfig(({ mode }) => ({
       ),
     },
   },
-  plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
+  plugins: [tailwindcss(), reactRouter()],
 }))
