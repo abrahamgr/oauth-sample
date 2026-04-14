@@ -7,10 +7,11 @@ const SESSION_SECRET =
   'session-signing-secret-change-in-production-32c'
 
 const secret = new TextEncoder().encode(SESSION_SECRET)
+export const SESSION_COOKIE_NAME = '__session'
 
 /**
  * Sign a session JWT containing the authenticated user's ID.
- * The API will verify this JWT when it receives the idp_session cookie.
+ * The API will verify this JWT when it receives the session cookie.
  */
 export async function signSession(userId: string): Promise<string> {
   return new SignJWT({ sub: userId })
@@ -26,12 +27,13 @@ export async function signSession(userId: string): Promise<string> {
  * on cross-origin redirects (browser navigations from :3000 → :3001 → :3002).
  */
 export function buildSessionCookie(token: string): string {
-  return `idp_session=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=600`
+  return `${SESSION_COOKIE_NAME}=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=600`
 }
 
 export async function verifySession(request: Request): Promise<string | null> {
   const cookieHeader = request.headers.get('Cookie') ?? ''
-  const match = cookieHeader.match(/(?:^|;\s*)idp_session=([^;]+)/)
+  const regex = new RegExp(`(?:^|;\\s*)${SESSION_COOKIE_NAME}=([^;]+)`)
+  const match = cookieHeader.match(regex)
   if (!match) return null
   try {
     const { payload } = await jwtVerify(match[1], secret)

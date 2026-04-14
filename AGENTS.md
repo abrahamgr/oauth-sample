@@ -58,17 +58,17 @@ app (3000) → api/authorize (3001) → idp/login (3002) → api/authorize → a
 ```
 
 1. `app/src/oauth.ts:startLogin()` — generates PKCE verifier/challenge, stores in `sessionStorage`, redirects to `api:3001/authorize`
-2. `api/routes/authorize.ts` — if no `idp_session` cookie, redirects to `idp:3002/login?redirect=<authorize_url>`
-3. `idp/routes/login.tsx` — user submits credentials → `lib/api-client.ts` calls `api:3001/internal/verify` → sets `idp_session` cookie → redirects back to `api:3001/authorize`
-4. `api/routes/authorize.ts` — verifies `idp_session` JWT, issues auth code, redirects to `app:3000/callback`
+2. `api/routes/authorize.ts` — if no `__session` cookie, redirects to `idp:3002/login?redirect=<authorize_url>`
+3. `idp/routes/login.tsx` — user submits credentials → `lib/api-client.ts` calls `api:3001/internal/verify` → sets `__session` cookie → redirects back to `api:3001/authorize`
+4. `api/routes/authorize.ts` — verifies `__session` JWT, issues auth code, redirects to `app:3000/callback`
 5. `app/src/pages/Callback.tsx` — exchanges code + verifier via `api:3001/token` (PKCE verified), stores access token in `sessionStorage`
 6. `app/src/pages/Profile.tsx` — calls `api:3001/userinfo` with Bearer token
 
 ### Session Cookie
 
-The `idp_session` cookie is a short-lived (10 min) HS256 JWT signed with `SESSION_SECRET`. This secret is **shared between api and idp** — the API verifies the cookie the IDP sets. Cookies scope to `localhost` hostname (not port), so the browser sends them to both :3001 and :3002.
+The `__session` cookie is a short-lived (10 min) HS256 JWT signed with `SESSION_SECRET`. This secret is **shared between api and idp** — the API verifies the cookie the IDP sets. Cookies scope to `localhost` hostname (not port), so the browser sends them to both :3001 and :3002.
 
-Logout: `app/src/oauth.ts:logout()` clears `sessionStorage` then redirects to `idp:3002/logout`, which sets `Max-Age=0` on the `idp_session` cookie before redirecting back to the app.
+Logout: `app/src/oauth.ts:logout()` clears `sessionStorage` then redirects to `idp:3002/logout`, which sets `Max-Age=0` on the `__session` cookie before redirecting back to the app.
 
 ### API Package (`packages/api`)
 
@@ -87,7 +87,7 @@ Logout: `app/src/oauth.ts:logout()` clears `sessionStorage` then redirects to `i
 ### IDP Package (`packages/idp`)
 
 - Framework mode React Router v7 (SSR). Routes are defined in `app/routes.ts`.
-- `app/sessions.server.ts` — `signSession(userId)` / `buildSessionCookie(token)` — signs the `idp_session` JWT
+- `app/sessions.server.ts` — `signSession(userId)` / `buildSessionCookie(token)` — signs the `__session` JWT
 - `app/lib/api-client.ts` — server-side fetch wrapper to `packages/api` with `X-Internal-Secret`
 - `app/lib/schemas.ts` — Zod schemas (`loginSchema`, `registerSchema`, `forgotPasswordSchema`, `resetPasswordSchema`) shared between server actions and react-hook-form
 - `app/routes/forgot-password.tsx` — email submission form; calls `POST /password-reset/request`

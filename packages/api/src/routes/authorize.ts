@@ -1,6 +1,11 @@
 import type { FastifyInstance } from 'fastify'
 import { jwtVerify } from 'jose'
-import { config, getClient, registeredClients } from '../config'
+import {
+  SESSION_COOKIE_NAME,
+  config,
+  getClient,
+  registeredClients,
+} from '../config'
 import { createCode } from '../db'
 import { authorizeQuerySchema } from '../schemas'
 
@@ -9,7 +14,7 @@ export async function authorizeRoutes(app: FastifyInstance) {
   //
   // Flow:
   // 1. Validate client_id, redirect_uri, and PKCE parameters.
-  // 2. Check for a valid idp_session cookie (set by the IDP after login).
+  // 2. Check for a valid session cookie (set by the IDP after login).
   // 3. If no session → redirect to IDP login page.
   // 4. If session valid → issue an auth code and redirect to redirect_uri.
   app.get('/authorize', async (request, reply) => {
@@ -69,7 +74,7 @@ export async function authorizeRoutes(app: FastifyInstance) {
 
     // ── Check for an existing IDP session cookie ──────────────────────────────
 
-    const sessionToken = request.cookies.idp_session
+    const sessionToken = request.cookies[SESSION_COOKIE_NAME]
 
     if (!sessionToken) {
       // No session — send user to IDP login page.
@@ -91,7 +96,7 @@ export async function authorizeRoutes(app: FastifyInstance) {
     } catch {
       // Invalid or expired session — restart login
       request.log.warn('Invalid or expired session — restart login')
-      reply.clearCookie('idp_session')
+      reply.clearCookie(SESSION_COOKIE_NAME)
       return redirectToLogin()
     }
 

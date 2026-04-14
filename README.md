@@ -57,7 +57,7 @@ Then open [http://localhost:3000](http://localhost:3000). Password reset emails 
 └────────────────────────┬────────────────────────────────┘
                          │ 3. User submits credentials
                          │    API verifies via /internal/verify
-                         │    IDP sets idp_session cookie
+                         │    IDP sets __session cookie
                          │    Redirect back to /authorize
                          ▼
 ┌─────────────────────────────────────────────────────────┐
@@ -85,7 +85,7 @@ The app generates a random `code_verifier`, computes `code_challenge = base64url
 
 ### Session Cookie
 
-After the user logs in on the IDP, it sets an `idp_session` cookie containing a short-lived (10 min) signed JWT. The API verifies this cookie on the `/authorize` endpoint using a shared `SESSION_SECRET`. Because cookies are scoped to the `localhost` hostname (not port), the browser sends the cookie to both :3001 and :3002.
+After the user logs in on the IDP, it sets an `__session` cookie containing a short-lived (10 min) signed JWT. The API verifies this cookie on the `/authorize` endpoint using a shared `SESSION_SECRET`. Because cookies are scoped to the `localhost` hostname (not port), the browser sends the cookie to both :3001 and :3002.
 
 ## Project Structure
 
@@ -112,7 +112,7 @@ packages/
 │           └── password-reset.ts  # POST /password-reset/request + /confirm
 ├── idp/
 │   └── app/
-│       ├── sessions.server.ts # sign/build idp_session cookie
+│       ├── sessions.server.ts # sign/build __session cookie
 │       ├── lib/
 │       │   ├── api-client.ts  # server-to-server calls to packages/api
 │       │   └── schemas.ts     # Zod schemas for login/register/password-reset forms
@@ -121,7 +121,7 @@ packages/
 │           ├── register.tsx
 │           ├── forgot-password.tsx  # email submission form
 │           ├── reset-password.tsx   # new password form (token from query param)
-│           └── logout.ts      # clears idp_session cookie
+│           └── logout.ts      # clears __session cookie
 ├── app/
 │   └── src/
 │       ├── pkce.ts            # generateVerifier / generateChallenge
@@ -150,7 +150,7 @@ All variables have working defaults for local development — no `.env` file is 
 |---|---|---|
 | `PORT` | `3001` | API server port |
 | `JWT_SECRET` | *(insecure default)* | Signs access tokens |
-| `SESSION_SECRET` | *(insecure default)* | Verifies idp_session cookies — must match IDP |
+| `SESSION_SECRET` | *(insecure default)* | Verifies __session cookies — must match IDP |
 | `INTERNAL_SECRET` | `internal-api-secret` | Guards `/register` and `/internal/*` |
 | `IDP_URL` | `http://localhost:3000/idp` | Where to redirect unauthenticated users |
 | `APP_URL` | `http://localhost:3000` | Allowed CORS origin |
@@ -161,7 +161,7 @@ All variables have working defaults for local development — no `.env` file is 
 **`packages/idp`**
 | Variable | Default | Description |
 |---|---|---|
-| `SESSION_SECRET` | *(insecure default)* | Signs idp_session cookies — must match API |
+| `SESSION_SECRET` | *(insecure default)* | Signs __session cookies — must match API |
 | `INTERNAL_SECRET` | `internal-api-secret` | Sent as `X-Internal-Secret` to the API |
 | `API_URL` | `http://localhost:3000/api` | API base URL |
 

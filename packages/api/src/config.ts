@@ -21,6 +21,8 @@ export const config = {
   },
 }
 
+export const SESSION_COOKIE_NAME = '__session'
+
 // Registered OAuth clients. In a real auth server this lives in the database.
 export interface OAuthClient {
   clientId: string

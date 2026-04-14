@@ -7,6 +7,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import { useActionData, useLoaderData, useSubmit } from 'react-router'
 import { resetPassword } from '../lib/api-client'
 import { type ResetPasswordFields, resetPasswordSchema } from '../lib/schemas'
+import { SESSION_COOKIE_NAME } from '../sessions.server'
 
 // ── Loader ────────────────────────────────────────────────────────────────────
 
@@ -34,8 +35,7 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   // Clear IDP session and force re-login with new password
-  const clearedCookie =
-    'idp_session=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax'
+  const clearedCookie = `${SESSION_COOKIE_NAME}=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax`
 
   return redirect('/login?message=password-reset', {
     headers: { 'Set-Cookie': clearedCookie },
