@@ -1,18 +1,9 @@
 import { UserAvatar } from '@oauth-sample/ui'
-import { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router'
-import { isLoggedIn } from '../oauth'
+import { Link } from 'react-router'
 import { useProfile } from '../profile-context'
 
 export default function Profile() {
-  const navigate = useNavigate()
   const { user, loading, error } = useProfile()
-
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      navigate('/')
-    }
-  }, [navigate])
 
   if (loading) {
     return (

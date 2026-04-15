@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router'
-import { IDP_URL, isLoggedIn, logout } from '../oauth'
+import { Link } from 'react-router'
+import { IDP_URL } from '../oauth'
+import { useProfile } from '../profile-context'
 
 const itemClass =
   'block px-3 py-2 rounded-lg text-sm font-medium text-[color:var(--text-muted)] hover:text-[color:var(--text)] hover:bg-[color:var(--bg-accent)] transition-colors cursor-pointer'
 
 function NavItems({ onAction }: { onAction?: () => void }) {
-  useLocation() // re-render on route changes so isLoggedIn() reflects updated sessionStorage
-  const loggedIn = isLoggedIn()
+  const { loggedIn, logout } = useProfile()
 
   return (
     <>

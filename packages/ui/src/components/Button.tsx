@@ -19,7 +19,7 @@ export function Button({
   return (
     <button
       type="button"
-      className={`${variantClass[variant]} ${className}`}
+      className={`app-button ${variantClass[variant]} ${className}`}
       {...rest}
     >
       {children}

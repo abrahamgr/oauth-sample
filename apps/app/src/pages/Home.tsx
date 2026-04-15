@@ -1,8 +1,9 @@
 import { Button } from '@oauth-sample/ui'
-import { isLoggedIn, startLogin } from '../oauth'
+import { Link } from 'react-router'
+import { useProfile } from '../profile-context'
 
 export default function Home() {
-  const loggedIn = isLoggedIn()
+  const { loggedIn, login } = useProfile()
 
   return (
     <div className="page-shell page-center">
@@ -76,7 +77,7 @@ export default function Home() {
 
         {!loggedIn && (
           <Button
-            onClick={() => startLogin()}
+            onClick={() => void login()}
             className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl px-6 py-3 font-semibold"
           >
             <svg
@@ -95,6 +96,12 @@ export default function Home() {
             </svg>
             Login with OAuth
           </Button>
+        )}
+
+        {loggedIn && (
+          <Link to="/profile" className="app-link text-sm font-medium">
+            View your profile
+          </Link>
         )}
       </div>
     </div>

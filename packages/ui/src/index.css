@@ -240,6 +240,28 @@
     );
   }
 
+  .app-button {
+    transition:
+      transform 150ms ease,
+      opacity 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  .app-button:focus-visible,
+  .app-toggle-option:has(input:focus-visible),
+  .ui-profile-chip:focus-visible,
+  .ui-input:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--accent) 70%, white 30%);
+    outline-offset: 2px;
+  }
+
+  .app-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+    transform: none;
+  }
+
   .app-link {
     color: var(--link);
     transition: color 150ms ease;
@@ -356,6 +378,13 @@
 
   .ui-error-message {
     color: color-mix(in srgb, var(--danger) 80%, var(--text));
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .ui-field-description {
+    color: var(--text-muted);
     margin-top: 0.25rem;
     font-size: 0.75rem;
     line-height: 1rem;

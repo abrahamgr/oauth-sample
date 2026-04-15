@@ -49,25 +49,31 @@ export function AppHeader({ icon, children, title }: AppHeaderProps) {
         <div className="flex items-center gap-4 self-start sm:self-auto">
           {children}
           <div className="app-theme-toggle">
-            <div className="app-toggle-track inline-flex gap-1 rounded-2xl p-1">
+            <fieldset className="app-toggle-track inline-flex gap-1 rounded-2xl p-1">
+              <legend className="sr-only">Theme mode</legend>
               {themeOptions.map((option) => {
                 const isActive = mode === option.value
 
                 return (
-                  <button
+                  <label
                     key={option.value}
-                    type="button"
-                    aria-pressed={isActive}
                     className={`app-toggle-option rounded-xl px-3 py-2 text-sm font-medium ${
                       isActive ? 'app-toggle-option-active' : ''
                     }`}
-                    onClick={() => setMode(option.value)}
                   >
+                    <input
+                      checked={isActive}
+                      className="sr-only"
+                      name="theme-mode"
+                      onChange={() => setMode(option.value)}
+                      type="radio"
+                      value={option.value}
+                    />
                     {option.label}
-                  </button>
+                  </label>
                 )
               })}
-            </div>
+            </fieldset>
           </div>
         </div>
       </div>

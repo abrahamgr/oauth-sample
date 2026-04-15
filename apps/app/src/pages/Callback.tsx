@@ -1,35 +1,53 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate, useSearchParams } from 'react-router'
 import { exchangeCode } from '../oauth'
 
 export default function Callback() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const code = params.get('code')
-    const state = params.get('state')
-    const errorParam = params.get('error')
+    let active = true
+    const code = searchParams.get('code')
+    const state = searchParams.get('state')
+    const errorParam = searchParams.get('error')
+    const errorDescription = searchParams.get('error_description')
 
     if (errorParam) {
-      setError(`Authorization denied: ${errorParam}`)
-      return
+      setError(
+        errorDescription
+          ? `Authorization denied: ${errorDescription}`
+          : `Authorization denied: ${errorParam}`,
+      )
+      return undefined
     }
 
     if (!code || !state) {
       setError('Missing code or state in callback URL')
-      return
+      return undefined
     }
 
     exchangeCode(code, state)
-      .then(() => navigate('/success', { replace: true }))
+      .then(() => {
+        if (active) {
+          navigate('/success', { replace: true })
+        }
+      })
       .catch((err: unknown) => {
+        if (!active) {
+          return
+        }
+
         const message =
           err instanceof Error ? err.message : 'Token exchange failed'
         setError(message)
       })
-  }, [navigate])
+
+    return () => {
+      active = false
+    }
+  }, [navigate, searchParams])
 
   if (error) {
     return (
@@ -55,9 +73,9 @@ export default function Callback() {
             Authentication failed
           </h2>
           <p className="mb-6 text-sm text-[color:var(--danger)]">{error}</p>
-          <a href="/" className="app-link text-sm font-medium">
+          <Link to="/" className="app-link text-sm font-medium">
             Try again
-          </a>
+          </Link>
         </div>
       </div>
     )

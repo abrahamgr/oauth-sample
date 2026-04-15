@@ -11,6 +11,7 @@ const API_URL = '/api'
 export const IDP_URL = '/idp'
 const CLIENT_ID = 'oauth-sample-app'
 const REDIRECT_URI = `${window.location.origin}/callback`
+export const AUTH_STATE_CHANGE_EVENT = 'oauth-profile-changed'
 
 const STORAGE_KEYS = {
   verifier: 'oauth_code_verifier',
@@ -19,7 +20,11 @@ const STORAGE_KEYS = {
 } as const
 
 function notifyProfileChanged() {
-  window.dispatchEvent(new Event('oauth-profile-changed'))
+  window.dispatchEvent(new Event(AUTH_STATE_CHANGE_EVENT))
+}
+
+export function getAccessToken(): string | null {
+  return sessionStorage.getItem(STORAGE_KEYS.token)
 }
 
 // ── Initiate login ────────────────────────────────────────────────────────────
@@ -122,8 +127,9 @@ export interface UserInfo {
 }
 
 /** Fetch the authenticated user's profile from the /userinfo endpoint. */
-export async function fetchUserInfo(): Promise<UserInfo> {
-  const token = sessionStorage.getItem(STORAGE_KEYS.token)
+export async function fetchUserInfo(
+  token = getAccessToken(),
+): Promise<UserInfo> {
   if (!token) throw new Error('No access token found — please log in')
 
   const res = await fetch(`${API_URL}/userinfo`, {
@@ -139,7 +145,7 @@ export async function fetchUserInfo(): Promise<UserInfo> {
 
 /** True if an access token is stored in sessionStorage. */
 export function isLoggedIn(): boolean {
-  return Boolean(sessionStorage.getItem(STORAGE_KEYS.token))
+  return Boolean(getAccessToken())
 }
 
 /** Clear the local token and redirect to the IDP to clear the session cookie. */
