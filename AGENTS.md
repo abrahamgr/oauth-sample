@@ -8,6 +8,9 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 # Start all three services in parallel
 pnpm run dev
 
+# Start Firebase Storage emulator
+pnpm --filter @oauth-sample/emulator run dev
+
 # Lint (read-only)
 pnpm run lint
 
@@ -21,6 +24,7 @@ pnpm run format
 pnpm --filter @oauth-sample/api run dev
 pnpm --filter @oauth-sample/idp run dev
 pnpm --filter @oauth-sample/app run dev
+pnpm --filter @oauth-sample/emulator run dev
 
 # Push Drizzle schema to Postgres (api package only, no migration history)
 cd apps/api && pnpm run db:push
@@ -42,13 +46,14 @@ Consumer packages (`app`, `idp`) must include a `@source` directive in their CSS
 
 ## Architecture
 
-Three packages in a pnpm workspace, each running on a fixed port:
+Four packages in a pnpm workspace. The app, API, and IDP run on fixed ports; the Firebase emulator is an auxiliary local-only service:
 
 | Package | Port | Role |
 |---|---|---|
 | `apps/api` | 3001 | Fastify OAuth Authorization Server |
 | `apps/idp` | 3002 | React Router v7 SSR Identity Provider (login/register UI) |
 | `apps/app` | 3000 | Vite + React SPA (OAuth client) |
+| `apps/emulator` | 9199 (`storage`), 8080 (`ui`), 5003 (`hosting`) | Firebase Local Emulator Suite config for Storage |
 | `packages/ui` | — | Shared component library (components, theme, CSS) |
 
 ### OAuth 2.0 PKCE Flow
@@ -87,12 +92,20 @@ Logout: `app/src/oauth.ts:logout()` clears `sessionStorage` then redirects to `i
 ### IDP Package (`apps/idp`)
 
 - Framework mode React Router v7 (SSR). Routes are defined in `app/routes.ts`.
+- Includes the Firebase Web SDK dependency for client-side Firebase integrations.
 - `app/sessions.server.ts` — `signSession(userId)` / `buildSessionCookie(token)` — signs the `__session` JWT
 - `app/lib/api-client.ts` — server-side fetch wrapper to `apps/api` with `X-Internal-Secret`
 - `app/lib/schemas.ts` — Zod schemas (`loginSchema`, `registerSchema`, `forgotPasswordSchema`, `resetPasswordSchema`) shared between server actions and react-hook-form
 - `app/routes/forgot-password.tsx` — email submission form; calls `POST /password-reset/request`
 - `app/routes/reset-password.tsx` — new password form; calls `POST /password-reset/confirm` with token from URL query param
 - Forms use react-hook-form with `zodResolver` for client-side validation. Form submission uses `useSubmit(formRef.current, { method: 'post' })` (submits the actual DOM form element, not a plain object) so React Router's action receives proper `FormData`.
+
+### Firebase Emulator / Storage
+
+- `firebase.json` configures Firebase Hosting rewrites, Storage rules, and the Local Emulator Suite.
+- `storage.rules` currently allows open read/write access for local development only.
+- `apps/emulator/package.json` provides `pnpm --filter @oauth-sample/emulator run dev`, which starts `firebase emulators:start --only storage`.
+- The Storage emulator listens on port `9199`; Emulator UI is enabled on `8080`; Hosting emulator is configured on `5003`.
 
 ### App Package (`apps/app`)
 

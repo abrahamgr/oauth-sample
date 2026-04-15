@@ -1,0 +1,10 @@
+{
+  "name": "@oauth-sample/emulator",
+  "private": true,
+  "scripts": {
+    "dev": "firebase emulators:start --only storage"
+  },
+  "devDependencies": {
+    "firebase-tools": "15.14.0"
+  }
+}

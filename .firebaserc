@@ -1,7 +1,6 @@
 {
   "projects": {
-    "default": "oauth-sample-7fe4b",
-    "oauth": "oauth-sample-7fe4b"
+    "default": "oauth-sample-7fe4b"
   },
   "targets": {},
   "etags": {}

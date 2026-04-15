@@ -20,6 +20,7 @@ A hands-on implementation of the **Authorization Code + PKCE** flow built from s
 - **UI**: Shared component library (`@ui`) — AppHeader, AppShell, form components, theme system
 - **Styling**: Tailwind CSS v4
 - **Email**: Nodemailer + Mailpit (Docker — SMTP testing UI at localhost:8025)
+- **Storage**: Firebase Storage + Local Emulator Suite (`apps/emulator`, Storage on localhost:9199)
 - **Linting/Formatting**: BiomeJS
 
 ## Getting Started
@@ -31,6 +32,7 @@ pnpm run dev
 ```
 
 Then open [http://localhost:3000](http://localhost:3000). Password reset emails can be inspected at [http://localhost:8025](http://localhost:8025) (Mailpit UI).
+Firebase Emulator UI is available at [http://localhost:8080](http://localhost:8080).
 
 ## The Flow
 
@@ -201,12 +203,15 @@ Deployments are triggered manually from GitHub Actions (Actions → Deploy to Fi
 3. **Create App Hosting backends** (once per environment)
    ```bash
    # IDP backend — React Router v7 SSR
-   firebase apphosting:backends:create --project YOUR_PROJECT_ID
+   firebase apphosting:backends:create
    # When prompted: name it "idp", root directory → apps/idp
 
    # API backend — Fastify (Node.js, Dockerfile)
-   firebase apphosting:backends:create --project YOUR_PROJECT_ID
+   firebase apphosting:backends:create
    # When prompted: name it "api", root directory → apps/api
+
+   # Storage
+   firebase storage:create
    ```
 
 4. **Note the backend IDs**
