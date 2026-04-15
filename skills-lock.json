@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "fastify-best-practices": {
+      "source": "mcollina/skills",
+      "sourceType": "github",
+      "computedHash": "269924684709b8c6f50a569ef988e66031efb822ef92cba6c8dfa160e54ed4d4"
+    },
     "react-router-framework-mode": {
       "source": "remix-run/agent-skills",
       "sourceType": "github",
