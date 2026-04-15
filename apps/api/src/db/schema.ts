@@ -5,6 +5,7 @@ export const users = pgTable('users', {
   email: text('email').notNull().unique(),
   password_hash: text('password_hash').notNull(),
   name: text('name').notNull(),
+  avatar_url: text('avatar_url'),
   created_at: integer('created_at')
     .notNull()
     .$defaultFn(() => Math.floor(Date.now() / 1000)),

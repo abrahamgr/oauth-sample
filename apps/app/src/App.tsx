@@ -5,6 +5,7 @@ import Callback from './pages/Callback'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
 import Success from './pages/Success'
+import { ProfileProvider } from './profile-context'
 
 const router = createBrowserRouter([
   {
@@ -33,7 +34,9 @@ const router = createBrowserRouter([
 export default function App() {
   return (
     <ThemeProvider>
-      <RouterProvider router={router} />
+      <ProfileProvider>
+        <RouterProvider router={router} />
+      </ProfileProvider>
     </ThemeProvider>
   )
 }

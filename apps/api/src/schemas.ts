@@ -11,6 +11,10 @@ const passwordField = z
   .min(8, 'Password must be at least 8 characters')
 const nameField = z.string().min(2, 'Name must be at least 2 characters')
 const requiredString = z.string().min(1, 'Required')
+const avatarUrlField = z
+  .string()
+  .url('Avatar URL must be a valid URL')
+  .nullable()
 
 // ── Route schemas ─────────────────────────────────────────────────────────────
 
@@ -54,6 +58,15 @@ export const internalVerifyBodySchema = z.object({
   password: z.string().min(1, 'Password is required'),
 })
 
+export const internalProfileHeadersSchema = z.object({
+  'x-user-id': requiredString,
+})
+
+export const updateProfileBodySchema = z.object({
+  name: nameField,
+  avatar_url: avatarUrlField,
+})
+
 export const forgotPasswordSchema = z.object({ email: emailField })
 
 export const resetPasswordSchema = z.object({
@@ -67,5 +80,9 @@ export type AuthorizeQuery = z.infer<typeof authorizeQuerySchema>
 export type TokenBody = z.infer<typeof tokenBodySchema>
 export type RegisterBody = z.infer<typeof registerBodySchema>
 export type InternalVerifyBody = z.infer<typeof internalVerifyBodySchema>
+export type InternalProfileHeaders = z.infer<
+  typeof internalProfileHeadersSchema
+>
+export type UpdateProfileBody = z.infer<typeof updateProfileBodySchema>
 export type ForgotPasswordBody = z.infer<typeof forgotPasswordSchema>
 export type ResetPasswordBody = z.infer<typeof resetPasswordSchema>

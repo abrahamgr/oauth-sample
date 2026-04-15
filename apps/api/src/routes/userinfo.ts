@@ -51,6 +51,7 @@ export async function userinfoRoutes(app: FastifyInstance) {
       sub: user.id,
       email: user.email,
       name: user.name,
+      avatar_url: user.avatar_url,
     })
   })
 }

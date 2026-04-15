@@ -12,10 +12,18 @@ const internalHeaders = {
   'X-Internal-Secret': INTERNAL_SECRET,
 }
 
+function buildProfileHeaders(userId: string) {
+  return {
+    ...internalHeaders,
+    'X-User-Id': userId,
+  }
+}
+
 export interface UserResult {
   id: string
   email: string
   name: string
+  avatar_url: string | null
 }
 
 /**
@@ -54,6 +62,45 @@ export async function registerUser(
   if (!res.ok) {
     const body = (await res.json()) as { error: string }
     throw new Error(body.error ?? 'Registration failed')
+  }
+
+  return res.json() as Promise<UserResult>
+}
+
+export async function getUserProfile(userId: string): Promise<UserResult> {
+  const res = await fetch(`${API_URL}/internal/profile`, {
+    headers: buildProfileHeaders(userId),
+  })
+
+  if (!res.ok) {
+    const body = (await res.json()) as { error?: string }
+    throw new Error(body.error ?? 'Failed to load profile')
+  }
+
+  return res.json() as Promise<UserResult>
+}
+
+export async function updateUser(
+  userId: string,
+  profile: { name: string; avatar_url: string | null },
+): Promise<UserResult> {
+  const res = await fetch(`${API_URL}/internal/profile`, {
+    method: 'PATCH',
+    headers: buildProfileHeaders(userId),
+    body: JSON.stringify(profile),
+  })
+
+  if (!res.ok) {
+    const body = (await res.json()) as {
+      error?: string
+      details?: Record<string, string[]>
+    }
+
+    if (body.error === 'invalid_request' && body.details) {
+      throw new Error(Object.values(body.details).flat()[0] ?? body.error)
+    }
+
+    throw new Error(body.error ?? 'Failed to update profile')
   }
 
   return res.json() as Promise<UserResult>

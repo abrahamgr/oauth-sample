@@ -28,7 +28,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const message = url.searchParams.get('message') ?? ''
 
   const userId = await verifySession(request)
-  if (userId) return redirect(redirectTo || 'http://localhost:3000')
+  if (userId) return redirect(redirectTo)
 
   return { redirectTo, message }
 }
@@ -63,7 +63,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const sessionToken = await signSession(user.id)
   const cookie = buildSessionCookie(sessionToken)
 
-  return redirect(redirectTo || 'http://localhost:3000', {
+  return redirect(redirectTo, {
     headers: { 'Set-Cookie': cookie },
   })
 }

@@ -1,27 +1,17 @@
-import { useEffect, useState } from 'react'
+import { UserAvatar } from '@oauth-sample/ui'
+import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { fetchUserInfo, isLoggedIn, type UserInfo } from '../oauth'
+import { isLoggedIn } from '../oauth'
+import { useProfile } from '../profile-context'
 
 export default function Profile() {
   const navigate = useNavigate()
-  const [user, setUser] = useState<UserInfo | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { user, loading, error } = useProfile()
 
   useEffect(() => {
     if (!isLoggedIn()) {
       navigate('/')
-      return
     }
-
-    fetchUserInfo()
-      .then(setUser)
-      .catch((err: unknown) => {
-        const message =
-          err instanceof Error ? err.message : 'Failed to load profile'
-        setError(message)
-      })
-      .finally(() => setLoading(false))
   }, [navigate])
 
   if (loading) {
@@ -61,21 +51,53 @@ export default function Profile() {
     )
   }
 
+  if (!user) {
+    return (
+      <div className="page-shell page-center">
+        <div className="app-panel-strong w-full max-w-md rounded-2xl p-8 text-center">
+          <p className="mb-4 text-sm text-[color:var(--text-muted)]">
+            Profile data is not available right now.
+          </p>
+          <Link to="/" className="app-link text-sm font-medium">
+            Go home
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="page-shell page-center">
       <div className="w-full max-w-md">
         <div className="app-panel-strong overflow-hidden rounded-2xl">
           <div className="app-profile-hero px-8 py-10 text-center">
-            <div className="app-profile-avatar mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full">
-              <span className="text-3xl font-bold text-white">
-                {user?.name.charAt(0).toUpperCase()}
-              </span>
-            </div>
+            <UserAvatar
+              name={user?.name ?? 'User'}
+              avatarUrl={user?.avatar_url}
+              className="app-profile-avatar mx-auto mb-4 h-20 w-20"
+            />
             <h1 className="text-2xl font-bold text-white">{user?.name}</h1>
             <p className="mt-1 text-sm text-indigo-100/80">{user?.email}</p>
           </div>
 
           <div className="p-8">
+            <div className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
+              <div>
+                <h2 className="text-base font-semibold text-[color:var(--text)]">
+                  Manage your account
+                </h2>
+                <p className="app-muted mt-1 text-sm">
+                  Edit your name and avatar in the Identity Provider.
+                </p>
+              </div>
+              <a
+                href="/idp/profile"
+                className="app-link text-sm font-semibold whitespace-nowrap"
+              >
+                Edit in IDP
+              </a>
+            </div>
+
             <h2 className="app-kicker mb-4 text-sm font-semibold uppercase tracking-[0.2em]">
               /userinfo claims
             </h2>
@@ -102,6 +124,14 @@ export default function Profile() {
                 </dt>
                 <dd className="text-right text-sm text-[color:var(--text)]">
                   {user?.name}
+                </dd>
+              </div>
+              <div className="flex justify-between items-start gap-4">
+                <dt className="app-muted flex-shrink-0 text-sm font-medium">
+                  avatar_url
+                </dt>
+                <dd className="break-all text-right text-sm text-[color:var(--text)]">
+                  {user?.avatar_url ?? 'null'}
                 </dd>
               </div>
             </dl>

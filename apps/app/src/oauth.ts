@@ -18,6 +18,10 @@ const STORAGE_KEYS = {
   token: 'oauth_access_token',
 } as const
 
+function notifyProfileChanged() {
+  window.dispatchEvent(new Event('oauth-profile-changed'))
+}
+
 // ── Initiate login ────────────────────────────────────────────────────────────
 
 /**
@@ -99,6 +103,7 @@ export async function exchangeCode(
 
   // Store the access token for subsequent API calls
   sessionStorage.setItem(STORAGE_KEYS.token, tokens.access_token)
+  notifyProfileChanged()
 
   // Clean up PKCE state
   sessionStorage.removeItem(STORAGE_KEYS.verifier)
@@ -113,6 +118,7 @@ export interface UserInfo {
   sub: string
   email: string
   name: string
+  avatar_url: string | null
 }
 
 /** Fetch the authenticated user's profile from the /userinfo endpoint. */
@@ -139,5 +145,6 @@ export function isLoggedIn(): boolean {
 /** Clear the local token and redirect to the IDP to clear the session cookie. */
 export function logout(): void {
   sessionStorage.removeItem(STORAGE_KEYS.token)
+  notifyProfileChanged()
   window.location.href = `${IDP_URL}/logout?redirect=${encodeURIComponent(window.location.origin)}`
 }

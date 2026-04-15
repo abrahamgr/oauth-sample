@@ -275,6 +275,43 @@
     border: 1px solid var(--hero-chip-border);
   }
 
+  .ui-avatar {
+    background: color-mix(in srgb, var(--surface-muted) 92%, white 8%);
+    border: 1px solid var(--border);
+    color: color-mix(in srgb, var(--accent-strong) 68%, white);
+    flex-shrink: 0;
+  }
+
+  .ui-avatar-fallback {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--surface-strong) 80%, white 20%),
+      color-mix(in srgb, var(--surface-muted) 90%, transparent)
+    );
+  }
+
+  .ui-identity {
+    min-width: 0;
+  }
+
+  .ui-profile-chip {
+    min-width: 0;
+    max-width: min(18rem, 42vw);
+    background: color-mix(in srgb, var(--surface-strong) 90%, transparent);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.35rem 0.7rem 0.35rem 0.4rem;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease,
+      color 150ms ease;
+  }
+
+  .ui-profile-chip:hover {
+    background: var(--secondary-hover);
+    border-color: var(--border-strong);
+  }
+
   .ui-label {
     display: block;
     font-size: 0.875rem;

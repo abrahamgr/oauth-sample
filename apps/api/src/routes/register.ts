@@ -41,8 +41,14 @@ export async function registerRoutes(app: FastifyInstance) {
     const passwordHash = await hashPassword(password)
     const id = crypto.randomUUID()
 
-    await createUser({ id, email, password_hash: passwordHash, name })
+    await createUser({
+      id,
+      email,
+      password_hash: passwordHash,
+      name,
+      avatar_url: null,
+    })
 
-    return reply.status(201).send({ id, email, name })
+    return reply.status(201).send({ id, email, name, avatar_url: null })
   })
 }

@@ -49,6 +49,13 @@ export async function findUserById(id: string): Promise<User | null> {
   return row ?? null
 }
 
+export async function updateUserProfile(
+  id: string,
+  profile: Pick<typeof schema.users.$inferInsert, 'name' | 'avatar_url'>,
+): Promise<void> {
+  await db.update(schema.users).set(profile).where(eq(schema.users.id, id))
+}
+
 export async function updateUserPassword(
   id: string,
   passwordHash: string,
