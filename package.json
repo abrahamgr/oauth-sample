@@ -8,7 +8,7 @@
     "dev": "turbo run dev",
     "format": "biome format --write .",
     "lint": "biome check .",
-    "prepare": "lefthook install || true"
+    "prepare": "lefthook install && ./link-skills.sh || true"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.12",

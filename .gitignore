@@ -46,3 +46,6 @@ sa-key.json
 
 # firebase
 .firebase
+
+# AI
+.claude/skills
