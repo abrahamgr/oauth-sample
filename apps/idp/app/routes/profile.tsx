@@ -3,15 +3,9 @@ import { Button, FormField, Input, UserAvatar } from '@oauth-sample/ui'
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
-import {
-  data,
-  redirect,
-  useActionData,
-  useLoaderData,
-  useNavigation,
-  useSubmit,
-} from 'react-router'
-import { getUserProfile, updateUser } from '../lib/api-client'
+import { data, redirect, useFetcher, useLoaderData } from 'react-router'
+import { RouteErrorCard } from '../components/RouteErrorCard'
+import { ApiClientError, getUserProfile, updateUser } from '../lib/api-client'
 import { uploadUserAvatar } from '../lib/avatar.client'
 import {
   type ProfileFormFields,
@@ -67,10 +61,13 @@ export async function action({ request }: ActionFunctionArgs) {
 
     return data({ success: 'Profile updated.', user })
   } catch (err) {
+    const fieldErrors =
+      err instanceof ApiClientError && err.details ? err.details : {}
+
     return data(
       {
         error: err instanceof Error ? err.message : 'Failed to update profile',
-        fieldErrors: {},
+        fieldErrors,
       },
       { status: 400 },
     )
@@ -79,9 +76,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function ProfilePage() {
   const { user } = useLoaderData<typeof loader>()
-  const actionData = useActionData<typeof action>()
-  const navigation = useNavigation()
-  const submit = useSubmit()
+  const fetcher = useFetcher<typeof action>()
   const formRef = useRef<HTMLFormElement>(null)
   const avatarUrlRef = useRef<HTMLInputElement>(null)
   const [previewUrl, setPreviewUrl] = useState(user.avatar_url)
@@ -99,6 +94,7 @@ export default function ProfilePage() {
     defaultValues: { name: user.name },
   })
 
+  const actionData = fetcher.data
   const savedUser = actionData && 'user' in actionData ? actionData.user : null
   const successMessage =
     actionData && 'success' in actionData ? actionData.success : null
@@ -129,15 +125,20 @@ export default function ProfilePage() {
     }
   }, [previewUrl])
 
+  useEffect(() => {
+    if (fetcher.state === 'idle') {
+      setIsUploading(false)
+    }
+  }, [fetcher.state])
+
   async function onValid() {
     if (!formRef.current || !avatarUrlRef.current) return
 
     setUploadError(null)
 
     try {
-      setIsUploading(true)
-
       if (selectedFile) {
+        setIsUploading(true)
         const previousAvatarUrl = avatarUrlRef.current.value || user.avatar_url
         avatarUrlRef.current.value = await uploadUserAvatar(
           user.id,
@@ -146,7 +147,7 @@ export default function ProfilePage() {
         )
       }
 
-      submit(formRef.current, { method: 'post' })
+      fetcher.submit(formRef.current, { method: 'post' })
     } catch (err) {
       setUploadError(
         err instanceof Error ? err.message : 'Failed to upload avatar',
@@ -155,7 +156,7 @@ export default function ProfilePage() {
     }
   }
 
-  const isSaving = isUploading || navigation.state === 'submitting'
+  const isSaving = isUploading || fetcher.state !== 'idle'
   const avatarFieldError = fieldErrors?.avatarUrl?.[0]
 
   return (
@@ -189,7 +190,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <form
+          <fetcher.Form
             ref={formRef}
             method="post"
             onSubmit={handleSubmit(onValid)}
@@ -331,9 +332,22 @@ export default function ProfilePage() {
                 {isSaving ? 'Saving…' : 'Save profile'}
               </Button>
             </aside>
-          </form>
+          </fetcher.Form>
         </div>
       </div>
     </div>
+  )
+}
+
+export function meta() {
+  return [{ title: 'Profile | OAuth Sample IDP' }]
+}
+
+export function ErrorBoundary() {
+  return (
+    <RouteErrorCard
+      heading="Unable to load your profile"
+      fallbackMessage="The profile settings page could not be loaded."
+    />
   )
 }

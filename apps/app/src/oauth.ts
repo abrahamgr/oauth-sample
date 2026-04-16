@@ -66,6 +66,8 @@ export interface TokenResponse {
   scope: string
 }
 
+const inFlightCodeExchanges = new Map<string, Promise<TokenResponse>>()
+
 /**
  * Exchange the authorization code for an access token.
  *   1. Validate the state to prevent CSRF.
@@ -77,44 +79,60 @@ export async function exchangeCode(
   code: string,
   state: string,
 ): Promise<TokenResponse> {
-  const storedState = sessionStorage.getItem(STORAGE_KEYS.state)
-  if (!storedState || storedState !== state) {
-    throw new Error('State mismatch — possible CSRF attack')
+  const exchangeKey = `${code}:${state}`
+  const existingExchange = inFlightCodeExchanges.get(exchangeKey)
+  if (existingExchange) {
+    return existingExchange
   }
 
-  const verifier = sessionStorage.getItem(STORAGE_KEYS.verifier)
-  if (!verifier) {
-    throw new Error('Code verifier not found in sessionStorage')
+  const exchangePromise = (async () => {
+    const storedState = sessionStorage.getItem(STORAGE_KEYS.state)
+    if (!storedState || storedState !== state) {
+      throw new Error('State mismatch — possible CSRF attack')
+    }
+
+    const verifier = sessionStorage.getItem(STORAGE_KEYS.verifier)
+    if (!verifier) {
+      throw new Error('Code verifier not found in sessionStorage')
+    }
+
+    const res = await fetch(`${API_URL}/token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        grant_type: 'authorization_code',
+        code,
+        code_verifier: verifier,
+        client_id: CLIENT_ID,
+        redirect_uri: REDIRECT_URI,
+      }),
+    })
+
+    if (!res.ok) {
+      const err = (await res.json()) as { error: string }
+      throw new Error(err.error ?? 'Token exchange failed')
+    }
+
+    const tokens = (await res.json()) as TokenResponse
+
+    // Store the access token for subsequent API calls
+    sessionStorage.setItem(STORAGE_KEYS.token, tokens.access_token)
+    notifyProfileChanged()
+
+    // Clean up PKCE state
+    sessionStorage.removeItem(STORAGE_KEYS.verifier)
+    sessionStorage.removeItem(STORAGE_KEYS.state)
+
+    return tokens
+  })()
+
+  inFlightCodeExchanges.set(exchangeKey, exchangePromise)
+
+  try {
+    return await exchangePromise
+  } finally {
+    inFlightCodeExchanges.delete(exchangeKey)
   }
-
-  const res = await fetch(`${API_URL}/token`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      grant_type: 'authorization_code',
-      code,
-      code_verifier: verifier,
-      client_id: CLIENT_ID,
-      redirect_uri: REDIRECT_URI,
-    }),
-  })
-
-  if (!res.ok) {
-    const err = (await res.json()) as { error: string }
-    throw new Error(err.error ?? 'Token exchange failed')
-  }
-
-  const tokens = (await res.json()) as TokenResponse
-
-  // Store the access token for subsequent API calls
-  sessionStorage.setItem(STORAGE_KEYS.token, tokens.access_token)
-  notifyProfileChanged()
-
-  // Clean up PKCE state
-  sessionStorage.removeItem(STORAGE_KEYS.verifier)
-  sessionStorage.removeItem(STORAGE_KEYS.state)
-
-  return tokens
 }
 
 // ── Fetch user info ───────────────────────────────────────────────────────────

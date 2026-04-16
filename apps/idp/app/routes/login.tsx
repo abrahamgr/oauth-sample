@@ -1,18 +1,21 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, FormField, Input } from '@oauth-sample/ui'
-import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import {
   data,
+  Form,
   Link,
   redirect,
   useActionData,
   useLoaderData,
+  useNavigation,
   useSubmit,
 } from 'react-router'
+import { RouteErrorCard } from '../components/RouteErrorCard'
 import { validateCredentials } from '../lib/api-client'
 import { getClientIp, isRateLimited } from '../lib/rate-limit.server'
+import { sanitizeRedirectTarget } from '../lib/redirects'
 import { type LoginFields, loginSchema } from '../lib/schemas'
 import {
   buildSessionCookie,
@@ -24,7 +27,10 @@ import {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
-  const redirectTo = url.searchParams.get('redirect') ?? ''
+  const redirectTo = sanitizeRedirectTarget(
+    request,
+    url.searchParams.get('redirect'),
+  )
   const message = url.searchParams.get('message') ?? ''
 
   const userId = await verifySession(request)
@@ -47,7 +53,10 @@ export async function action({ request }: ActionFunctionArgs) {
   const form = await request.formData()
   const email = form.get('email') as string
   const password = form.get('password') as string
-  const redirectTo = form.get('redirect') as string
+  const redirectTo = sanitizeRedirectTarget(
+    request,
+    form.get('redirect') as string,
+  )
 
   const user = await validateCredentials(email, password)
 
@@ -61,7 +70,7 @@ export async function action({ request }: ActionFunctionArgs) {
   // Sign a short-lived session JWT and set it as an HttpOnly cookie.
   // The API's /authorize route will verify this same cookie.
   const sessionToken = await signSession(user.id)
-  const cookie = buildSessionCookie(sessionToken)
+  const cookie = await buildSessionCookie(sessionToken)
 
   return redirect(redirectTo, {
     headers: { 'Set-Cookie': cookie },
@@ -73,18 +82,15 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function LoginPage() {
   const { redirectTo, message } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
+  const navigation = useNavigation()
+  const isSubmitting = navigation.state === 'submitting'
   const submit = useSubmit()
-  const formRef = useRef<HTMLFormElement>(null)
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFields>({ resolver: zodResolver(loginSchema) })
-
-  function onValid() {
-    if (formRef.current) submit(formRef.current, { method: 'post' })
-  }
 
   return (
     <div className="page-shell page-center">
@@ -99,10 +105,11 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form
-            ref={formRef}
+          <Form
             method="post"
-            onSubmit={handleSubmit(onValid)}
+            onSubmit={handleSubmit((_data, event) => {
+              submit(event?.target as HTMLFormElement)
+            })}
             className="space-y-5"
             noValidate
           >
@@ -158,9 +165,10 @@ export default function LoginPage() {
 
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="mt-2 flex w-full cursor-pointer justify-center rounded-xl px-4 py-2.5 text-sm font-semibold"
             >
-              Sign in
+              {isSubmitting ? 'Signing in…' : 'Sign in'}
             </Button>
 
             <p className="text-center text-sm text-[color:var(--text-muted)]">
@@ -172,9 +180,22 @@ export default function LoginPage() {
                 Create one
               </Link>
             </p>
-          </form>
+          </Form>
         </div>
       </div>
     </div>
+  )
+}
+
+export function meta() {
+  return [{ title: 'Sign In | OAuth Sample IDP' }]
+}
+
+export function ErrorBoundary() {
+  return (
+    <RouteErrorCard
+      heading="Unable to sign in"
+      fallbackMessage="The sign-in page could not be loaded."
+    />
   )
 }

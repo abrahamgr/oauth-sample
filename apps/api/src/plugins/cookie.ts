@@ -4,7 +4,7 @@ import { config } from '../config'
 
 export async function registerCookie(app: FastifyInstance) {
   await app.register(fastifyCookie, {
-    // Used to sign/unsign cookies — shared with the IDP so both can verify
+    // Shared with the IDP for session JWT verification.
     secret: config.sessionSecret,
     parseOptions: {},
   })

@@ -93,9 +93,9 @@ export async function authorizeRoutes(app: FastifyInstance) {
       const secret = new TextEncoder().encode(config.sessionSecret)
       const { payload } = await jwtVerify(sessionToken, secret)
       userId = payload.sub as string
-    } catch {
+    } catch (error) {
       // Invalid or expired session — restart login
-      request.log.warn('Invalid or expired session — restart login')
+      request.log.warn({ error }, 'Invalid or expired session — restart login')
       reply.clearCookie(SESSION_COOKIE_NAME)
       return redirectToLogin()
     }

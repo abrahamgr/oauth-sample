@@ -1,18 +1,21 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, FormField, Input } from '@oauth-sample/ui'
-import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import {
   data,
+  Form,
   Link,
   redirect,
   useActionData,
   useLoaderData,
+  useNavigation,
   useSubmit,
 } from 'react-router'
+import { RouteErrorCard } from '../components/RouteErrorCard'
 import { registerUser } from '../lib/api-client'
 import { getClientIp, isRateLimited } from '../lib/rate-limit.server'
+import { getDefaultAppRedirect, sanitizeRedirectTarget } from '../lib/redirects'
 import { type RegisterFields, registerSchema } from '../lib/schemas'
 import {
   buildSessionCookie,
@@ -24,10 +27,13 @@ import {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
-  const redirectTo = url.searchParams.get('redirect') ?? ''
+  const redirectTo = sanitizeRedirectTarget(
+    request,
+    url.searchParams.get('redirect'),
+  )
 
   const userId = await verifySession(request)
-  if (userId) return redirect(redirectTo || 'http://localhost:3000')
+  if (userId) return redirect(redirectTo || getDefaultAppRedirect())
 
   return { redirectTo }
 }
@@ -50,13 +56,16 @@ export async function action({ request }: ActionFunctionArgs) {
   const name = form.get('name') as string
   const email = form.get('email') as string
   const password = form.get('password') as string
-  const redirectTo = form.get('redirect') as string
+  const redirectTo = sanitizeRedirectTarget(
+    request,
+    form.get('redirect') as string,
+  )
 
   try {
     const user = await registerUser(email, password, name)
 
     const sessionToken = await signSession(user.id)
-    const cookie = buildSessionCookie(sessionToken)
+    const cookie = await buildSessionCookie(sessionToken)
 
     return redirect(redirectTo, {
       headers: { 'Set-Cookie': cookie },
@@ -72,18 +81,15 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function RegisterPage() {
   const { redirectTo } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
+  const navigation = useNavigation()
+  const isSubmitting = navigation.state === 'submitting'
   const submit = useSubmit()
-  const formRef = useRef<HTMLFormElement>(null)
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterFields>({ resolver: zodResolver(registerSchema) })
-
-  function onValid() {
-    if (formRef.current) submit(formRef.current, { method: 'post' })
-  }
 
   return (
     <div className="page-shell page-center">
@@ -98,10 +104,11 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <form
-            ref={formRef}
+          <Form
             method="post"
-            onSubmit={handleSubmit(onValid)}
+            onSubmit={handleSubmit((_data, event) => {
+              submit(event?.target as HTMLFormElement)
+            })}
             className="space-y-5"
             noValidate
           >
@@ -159,9 +166,10 @@ export default function RegisterPage() {
 
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="mt-2 flex w-full cursor-pointer justify-center rounded-xl px-4 py-2.5 text-sm font-semibold"
             >
-              Create account
+              {isSubmitting ? 'Creating account…' : 'Create account'}
             </Button>
 
             <p className="text-center text-sm text-[color:var(--text-muted)]">
@@ -173,9 +181,22 @@ export default function RegisterPage() {
                 Sign in
               </Link>
             </p>
-          </form>
+          </Form>
         </div>
       </div>
     </div>
+  )
+}
+
+export function meta() {
+  return [{ title: 'Register | OAuth Sample IDP' }]
+}
+
+export function ErrorBoundary() {
+  return (
+    <RouteErrorCard
+      heading="Unable to register"
+      fallbackMessage="The registration page could not be loaded."
+    />
   )
 }

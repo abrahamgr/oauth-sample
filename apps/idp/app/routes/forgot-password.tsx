@@ -1,15 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, FormField, Input } from '@oauth-sample/ui'
-import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import {
   data,
+  Form,
   Link,
   useActionData,
   useLoaderData,
+  useNavigation,
   useSubmit,
 } from 'react-router'
+import { RouteErrorCard } from '../components/RouteErrorCard'
 import { requestPasswordReset } from '../lib/api-client'
 import { type ForgotPasswordFields, forgotPasswordSchema } from '../lib/schemas'
 
@@ -37,8 +39,9 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function ForgotPasswordPage() {
   const { email: defaultEmail } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
+  const navigation = useNavigation()
+  const isSubmitting = navigation.state === 'submitting'
   const submit = useSubmit()
-  const formRef = useRef<HTMLFormElement>(null)
 
   const {
     register,
@@ -48,10 +51,6 @@ export default function ForgotPasswordPage() {
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: { email: defaultEmail },
   })
-
-  function onValid() {
-    if (formRef.current) submit(formRef.current, { method: 'post' })
-  }
 
   if (actionData && 'sent' in actionData) {
     return (
@@ -103,10 +102,11 @@ export default function ForgotPasswordPage() {
             </p>
           </div>
 
-          <form
-            ref={formRef}
+          <Form
             method="post"
-            onSubmit={handleSubmit(onValid)}
+            onSubmit={handleSubmit((_data, event) => {
+              submit(event?.target as HTMLFormElement)
+            })}
             className="space-y-5"
             noValidate
           >
@@ -127,9 +127,10 @@ export default function ForgotPasswordPage() {
 
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="mt-2 flex w-full cursor-pointer justify-center rounded-xl px-4 py-2.5 text-sm font-semibold"
             >
-              Send reset link
+              {isSubmitting ? 'Sending reset link…' : 'Send reset link'}
             </Button>
 
             <p className="text-center text-sm text-[color:var(--text-muted)]">
@@ -138,9 +139,22 @@ export default function ForgotPasswordPage() {
                 Sign in
               </Link>
             </p>
-          </form>
+          </Form>
         </div>
       </div>
     </div>
+  )
+}
+
+export function meta() {
+  return [{ title: 'Forgot Password | OAuth Sample IDP' }]
+}
+
+export function ErrorBoundary() {
+  return (
+    <RouteErrorCard
+      heading="Unable to reset your password"
+      fallbackMessage="The reset-link request page could not be loaded."
+    />
   )
 }

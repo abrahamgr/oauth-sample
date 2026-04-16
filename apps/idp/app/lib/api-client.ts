@@ -12,6 +12,27 @@ const internalHeaders = {
   'X-Internal-Secret': INTERNAL_SECRET,
 }
 
+export class ApiClientError extends Error {
+  code?: string
+  details?: Record<string, string[]>
+  status: number
+
+  constructor(
+    message: string,
+    options: {
+      status: number
+      code?: string
+      details?: Record<string, string[]>
+    },
+  ) {
+    super(message)
+    this.name = 'ApiClientError'
+    this.status = options.status
+    this.code = options.code
+    this.details = options.details
+  }
+}
+
 function buildProfileHeaders(userId: string) {
   return {
     ...internalHeaders,
@@ -24,6 +45,30 @@ export interface UserResult {
   email: string
   name: string
   avatar_url: string | null
+}
+
+async function parseErrorResponse(res: Response): Promise<ApiClientError> {
+  let body: {
+    error?: string
+    details?: Record<string, string[]>
+  } | null = null
+
+  try {
+    body = (await res.json()) as typeof body
+  } catch {
+    body = null
+  }
+
+  const message =
+    body?.details && Object.values(body.details).flat().length > 0
+      ? Object.values(body.details).flat()[0]
+      : (body?.error ?? `Request failed with status ${res.status}`)
+
+  return new ApiClientError(message, {
+    status: res.status,
+    code: body?.error,
+    details: body?.details,
+  })
 }
 
 /**
@@ -60,8 +105,7 @@ export async function registerUser(
   })
 
   if (!res.ok) {
-    const body = (await res.json()) as { error: string }
-    throw new Error(body.error ?? 'Registration failed')
+    throw await parseErrorResponse(res)
   }
 
   return res.json() as Promise<UserResult>
@@ -73,8 +117,7 @@ export async function getUserProfile(userId: string): Promise<UserResult> {
   })
 
   if (!res.ok) {
-    const body = (await res.json()) as { error?: string }
-    throw new Error(body.error ?? 'Failed to load profile')
+    throw await parseErrorResponse(res)
   }
 
   return res.json() as Promise<UserResult>
@@ -91,16 +134,7 @@ export async function updateUser(
   })
 
   if (!res.ok) {
-    const body = (await res.json()) as {
-      error?: string
-      details?: Record<string, string[]>
-    }
-
-    if (body.error === 'invalid_request' && body.details) {
-      throw new Error(Object.values(body.details).flat()[0] ?? body.error)
-    }
-
-    throw new Error(body.error ?? 'Failed to update profile')
+    throw await parseErrorResponse(res)
   }
 
   return res.json() as Promise<UserResult>
@@ -133,7 +167,6 @@ export async function resetPassword(
   })
 
   if (!res.ok) {
-    const body = (await res.json()) as { error: string }
-    throw new Error(body.error ?? 'Reset failed')
+    throw await parseErrorResponse(res)
   }
 }

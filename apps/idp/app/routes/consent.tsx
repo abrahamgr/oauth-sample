@@ -1,5 +1,9 @@
 import type { LoaderFunctionArgs } from 'react-router'
 import { useLoaderData } from 'react-router'
+import {
+  getDefaultDenyRedirect,
+  sanitizeRedirectTarget,
+} from '../lib/redirects'
 
 // ── Loader ────────────────────────────────────────────────────────────────────
 
@@ -7,7 +11,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
   const clientId = url.searchParams.get('client_id') ?? 'unknown'
   const scope = url.searchParams.get('scope') ?? 'openid profile email'
-  const redirectTo = url.searchParams.get('redirect') ?? ''
+  const redirectTo = sanitizeRedirectTarget(
+    request,
+    url.searchParams.get('redirect'),
+  )
 
   return { clientId, scope: scope.split(' '), redirectTo }
 }
@@ -64,7 +71,7 @@ export default function ConsentPage() {
               Allow
             </a>
             <a
-              href="http://localhost:3000"
+              href={getDefaultDenyRedirect()}
               className="app-button-secondary flex flex-1 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold"
             >
               Deny
@@ -74,4 +81,8 @@ export default function ConsentPage() {
       </div>
     </div>
   )
+}
+
+export function meta() {
+  return [{ title: 'Consent | OAuth Sample IDP' }]
 }

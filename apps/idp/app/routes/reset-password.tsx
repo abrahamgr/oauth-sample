@@ -1,19 +1,21 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, FormField, Input } from '@oauth-sample/ui'
-import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import {
   data,
+  Form,
   Link,
   redirect,
   useActionData,
   useLoaderData,
+  useNavigation,
   useSubmit,
 } from 'react-router'
-import { resetPassword } from '../lib/api-client'
+import { RouteErrorCard } from '../components/RouteErrorCard'
+import { ApiClientError, resetPassword } from '../lib/api-client'
 import { type ResetPasswordFields, resetPasswordSchema } from '../lib/schemas'
-import { SESSION_COOKIE_NAME } from '../sessions.server'
+import { clearSessionCookie } from '../sessions.server'
 
 // ── Loader ────────────────────────────────────────────────────────────────────
 
@@ -36,12 +38,15 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     await resetPassword(token, password)
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Reset failed'
+    const message =
+      err instanceof ApiClientError || err instanceof Error
+        ? err.message
+        : 'Reset failed'
     return data({ error: message }, { status: 400 })
   }
 
   // Clear IDP session and force re-login with new password
-  const clearedCookie = `${SESSION_COOKIE_NAME}=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax`
+  const clearedCookie = await clearSessionCookie()
 
   return redirect('/login?message=password-reset', {
     headers: { 'Set-Cookie': clearedCookie },
@@ -53,8 +58,9 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function ResetPasswordPage() {
   const { token } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
+  const navigation = useNavigation()
+  const isSubmitting = navigation.state === 'submitting'
   const submit = useSubmit()
-  const formRef = useRef<HTMLFormElement>(null)
 
   const {
     register,
@@ -63,10 +69,6 @@ export default function ResetPasswordPage() {
   } = useForm<ResetPasswordFields>({
     resolver: zodResolver(resetPasswordSchema),
   })
-
-  function onValid() {
-    if (formRef.current) submit(formRef.current, { method: 'post' })
-  }
 
   const apiError = actionData && 'error' in actionData ? actionData.error : null
   const isExpired = typeof apiError === 'string' && apiError.includes('expired')
@@ -106,10 +108,11 @@ export default function ResetPasswordPage() {
             </div>
           )}
 
-          <form
-            ref={formRef}
+          <Form
             method="post"
-            onSubmit={handleSubmit(onValid)}
+            onSubmit={handleSubmit((_data, event) => {
+              submit(event?.target as HTMLFormElement)
+            })}
             className="space-y-5"
             noValidate
           >
@@ -145,9 +148,10 @@ export default function ResetPasswordPage() {
 
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="mt-2 flex w-full cursor-pointer justify-center rounded-xl px-4 py-2.5 text-sm font-semibold"
             >
-              Update password
+              {isSubmitting ? 'Updating password…' : 'Update password'}
             </Button>
 
             <p className="text-center text-sm text-[color:var(--text-muted)]">
@@ -155,9 +159,22 @@ export default function ResetPasswordPage() {
                 Back to sign in
               </Link>
             </p>
-          </form>
+          </Form>
         </div>
       </div>
     </div>
+  )
+}
+
+export function meta() {
+  return [{ title: 'Reset Password | OAuth Sample IDP' }]
+}
+
+export function ErrorBoundary() {
+  return (
+    <RouteErrorCard
+      heading="Unable to update your password"
+      fallbackMessage="The password reset page could not be loaded."
+    />
   )
 }
