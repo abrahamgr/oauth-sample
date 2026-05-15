@@ -16,3 +16,28 @@ env:
     secret: INTERNAL_SECRET
   - variable: SESSION_SECRET
     secret: SESSION_SECRET
+  - variable: VITE_FIREBASE_API_KEY
+    value: AIzaSyBaAGvdlpkyRjOg5u8275QfyzDLBXynyrs
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: VITE_FIREBASE_APP_ID
+    value: 1:656193020054:web:7956688e06ab10a626e2b7
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: VITE_FIREBASE_PROJECT_ID
+    value: oauth-sample-7fe4b
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: VITE_FIREBASE_STORAGE_BUCKET
+    value: oauth-sample-7fe4b.firebasestorage.app
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: VITE_FIREBASE_AUTH_DOMAIN
+    value: oauth-sample-7fe4b.firebaseapp.com
+    availability:
+      - BUILD
+      - RUNTIME
