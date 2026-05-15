@@ -1,7 +1,7 @@
-import { AppHeader, AppShell, UserIdentity } from '@oauth-sample/ui'
-import { Outlet } from 'react-router'
+import { AppHeader, AppShell, ThemeToggle, UserMenu } from '@oauth-sample/ui'
+import { Link, Outlet } from 'react-router'
+import { IDP_URL } from '../oauth'
 import { useProfile } from '../profile-context'
-import NavMenu from './NavMenu'
 
 function AppIcon() {
   return (
@@ -23,21 +23,34 @@ function AppIcon() {
 }
 
 export default function AppLayout() {
-  const { user } = useProfile()
+  const { user, logout } = useProfile()
 
   return (
     <AppShell>
-      <AppHeader icon={<AppIcon />} title="OAuth Sample">
+      <AppHeader
+        icon={<AppIcon />}
+        title="OAuth Sample"
+        nav={[{ label: 'Home', to: '/' }]}
+      >
+        <ThemeToggle />
         {user ? (
-          <a href="/idp/profile" className="ui-profile-chip">
-            <UserIdentity
-              name={user.name}
-              avatarUrl={user.avatar_url}
-              subtitle="Edit in IDP"
-            />
-          </a>
+          <UserMenu
+            name={user.name}
+            avatarUrl={user.avatar_url}
+            subtitle={user.email}
+          >
+            <UserMenu.Item asChild className="sm:hidden">
+              <Link to="/">Home</Link>
+            </UserMenu.Item>
+            <UserMenu.Item asChild>
+              <Link to="/profile">Profile</Link>
+            </UserMenu.Item>
+            <UserMenu.Item asChild>
+              <a href={`${IDP_URL}/forgot-password`}>Reset password</a>
+            </UserMenu.Item>
+            <UserMenu.Item onSelect={logout}>Log out</UserMenu.Item>
+          </UserMenu>
         ) : null}
-        <NavMenu />
       </AppHeader>
       <main className="app-main">
         <Outlet />

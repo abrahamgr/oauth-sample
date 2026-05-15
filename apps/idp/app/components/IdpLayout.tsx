@@ -1,4 +1,4 @@
-import { AppHeader, AppShell, UserIdentity } from '@oauth-sample/ui'
+import { AppHeader, AppShell, ThemeToggle, UserMenu } from '@oauth-sample/ui'
 import type { LoaderFunctionArgs } from 'react-router'
 import { Link, Outlet, useLoaderData } from 'react-router'
 import { getUserProfile, type UserResult } from '../lib/api-client'
@@ -28,15 +28,28 @@ export default function IdpLayout() {
 
   return (
     <AppShell>
-      <AppHeader icon={<IdpIcon />} title="Identity Provider">
+      <AppHeader
+        icon={<IdpIcon />}
+        title="Identity Provider"
+        nav={user ? [{ label: 'Profile', to: '/profile' }] : []}
+      >
+        <ThemeToggle />
         {user ? (
-          <Link to="/profile" className="ui-profile-chip">
-            <UserIdentity
-              name={user.name}
-              avatarUrl={user.avatar_url}
-              subtitle="Profile settings"
-            />
-          </Link>
+          <UserMenu
+            name={user.name}
+            avatarUrl={user.avatar_url}
+            subtitle={user.email}
+          >
+            <UserMenu.Item asChild className="sm:hidden">
+              <Link to="/profile">Profile</Link>
+            </UserMenu.Item>
+            <UserMenu.Item asChild>
+              <Link to="/forgot-password">Reset password</Link>
+            </UserMenu.Item>
+            <UserMenu.Item asChild>
+              <a href="/logout">Log out</a>
+            </UserMenu.Item>
+          </UserMenu>
         ) : null}
       </AppHeader>
       <main className="app-main">

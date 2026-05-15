@@ -1,81 +1,79 @@
-import { type ThemeMode, useTheme } from '../theme'
-
-const themeOptions: Array<{ label: string; value: ThemeMode }> = [
-  { label: 'System', value: 'system' },
-  { label: 'Light', value: 'light' },
-  { label: 'Dark', value: 'dark' },
-]
+interface NavItem {
+  label: string
+  to: string
+  external?: boolean
+}
 
 interface AppHeaderProps {
   icon?: React.ReactNode
   title: string
+  brandHref?: string
+  nav?: NavItem[]
   children?: React.ReactNode
 }
 
-export function AppHeader({ icon, children, title }: AppHeaderProps) {
-  const { mode, setMode } = useTheme()
-
+function DefaultIcon() {
   return (
-    <header className="app-header px-4 py-4 sm:px-8">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="app-brand-mark flex h-11 w-11 items-center justify-center rounded-2xl">
-            {icon ? (
-              icon
-            ) : (
-              <svg
-                aria-hidden="true"
-                className="h-6 w-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+    <svg
+      aria-hidden="true"
+      className="h-6 w-6 text-white"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+      />
+    </svg>
+  )
+}
+
+export function AppHeader({
+  icon,
+  title,
+  brandHref = '/',
+  nav,
+  children,
+}: AppHeaderProps) {
+  return (
+    <header className="app-header px-4 py-3 sm:px-8">
+      <div className="mx-auto flex w-full max-w-6xl items-center gap-4">
+        <a
+          href={brandHref}
+          className="app-brand-link flex items-center gap-3 min-w-0"
+        >
+          <div className="app-brand-mark flex h-10 w-10 items-center justify-center rounded-2xl shrink-0">
+            {icon ?? <DefaultIcon />}
+          </div>
+          <span className="text-sm font-semibold text-[color:var(--text)] truncate">
+            {title}
+          </span>
+        </a>
+
+        {nav && nav.length > 0 ? (
+          <nav
+            aria-label="Primary"
+            className="hidden sm:flex items-center gap-1 ml-2"
+          >
+            {nav.map((item) => (
+              <a
+                key={`${item.label}:${item.to}`}
+                href={item.to}
+                className="app-nav-link"
+                {...(item.external
+                  ? { target: '_blank', rel: 'noreferrer noopener' }
+                  : {})}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                />
-              </svg>
-            )}
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-[color:var(--text)]">
-              {title}
-            </p>
-          </div>
-        </div>
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        ) : null}
 
-        <div className="flex items-center gap-4 self-start sm:self-auto">
-          {children}
-          <div className="app-theme-toggle">
-            <fieldset className="app-toggle-track inline-flex gap-1 rounded-2xl p-1">
-              <legend className="sr-only">Theme mode</legend>
-              {themeOptions.map((option) => {
-                const isActive = mode === option.value
-
-                return (
-                  <label
-                    key={option.value}
-                    className={`app-toggle-option rounded-xl px-3 py-2 text-sm font-medium ${
-                      isActive ? 'app-toggle-option-active' : ''
-                    }`}
-                  >
-                    <input
-                      checked={isActive}
-                      className="sr-only"
-                      name="theme-mode"
-                      onChange={() => setMode(option.value)}
-                      type="radio"
-                      value={option.value}
-                    />
-                    {option.label}
-                  </label>
-                )
-              })}
-            </fieldset>
-          </div>
-        </div>
+        <div className="ml-auto flex items-center gap-2">{children}</div>
       </div>
     </header>
   )
