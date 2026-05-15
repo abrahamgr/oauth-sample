@@ -47,6 +47,7 @@ sa-key.json
 # firebase
 .firebase
 firepit-log.txt
+apps/emulator/data/
 
 # AI
 .claude/skills
