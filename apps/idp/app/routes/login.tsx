@@ -97,9 +97,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="app-panel-strong rounded-2xl p-8">
           <div className="mb-8 text-center">
-            <h2 className="text-2xl font-bold text-[color:var(--text)]">
-              Sign in
-            </h2>
+            <h2 className="text-2xl font-bold text-(--text)">Sign in</h2>
             <p className="app-muted mt-1 text-sm">
               Identity Provider — OAuth 2.0 Demo
             </p>
@@ -171,7 +169,7 @@ export default function LoginPage() {
               {isSubmitting ? 'Signing in…' : 'Sign in'}
             </Button>
 
-            <p className="text-center text-sm text-[color:var(--text-muted)]">
+            <p className="text-center text-sm text-(--text-muted)">
               No account?{' '}
               <Link
                 to={`/register?redirect=${encodeURIComponent(redirectTo)}`}

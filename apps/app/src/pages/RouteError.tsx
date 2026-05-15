@@ -33,10 +33,8 @@ export default function RouteError({ error }: RouteErrorProps) {
             />
           </svg>
         </div>
-        <h1 className="mb-2 text-xl font-semibold text-[color:var(--text)]">
-          {title}
-        </h1>
-        <p className="mb-6 text-sm text-[color:var(--text-muted)]">{message}</p>
+        <h1 className="mb-2 text-xl font-semibold text-(--text)">{title}</h1>
+        <p className="mb-6 text-sm text-(--text-muted)">{message}</p>
         <Link to="/" className="app-link text-sm font-medium">
           Return home
         </Link>

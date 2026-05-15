@@ -5,7 +5,7 @@ export default function Success() {
         <div className="app-success mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full">
           <svg
             aria-hidden="true"
-            className="h-9 w-9 text-[color:var(--success)]"
+            className="h-9 w-9 text-(--success)"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -19,7 +19,7 @@ export default function Success() {
           </svg>
         </div>
 
-        <h1 className="mb-2 text-3xl font-bold text-[color:var(--text)]">
+        <h1 className="mb-2 text-3xl font-bold text-(--text)">
           You're logged in!
         </h1>
         <p className="app-muted mb-8">
@@ -29,20 +29,20 @@ export default function Success() {
         </p>
 
         <div className="app-panel-strong mb-6 rounded-2xl p-6 text-left">
-          <h3 className="mb-3 font-semibold text-[color:var(--text)]">
+          <h3 className="mb-3 font-semibold text-(--text)">
             What just happened?
           </h3>
           <ul className="app-muted space-y-2 text-sm">
             <li className="flex gap-2">
-              <span className="mt-0.5 text-[color:var(--success)]">✓</span>
+              <span className="mt-0.5 text-(--success)">✓</span>
               Auth server verified your PKCE code challenge
             </li>
             <li className="flex gap-2">
-              <span className="mt-0.5 text-[color:var(--success)]">✓</span>
+              <span className="mt-0.5 text-(--success)">✓</span>
               Authorization code exchanged for a JWT access token
             </li>
             <li className="flex gap-2">
-              <span className="mt-0.5 text-[color:var(--success)]">✓</span>
+              <span className="mt-0.5 text-(--success)">✓</span>
               Refresh token stored for later use
             </li>
           </ul>

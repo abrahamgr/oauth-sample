@@ -48,7 +48,7 @@ export function AppHeader({
           <div className="app-brand-mark flex h-10 w-10 items-center justify-center rounded-2xl shrink-0">
             {icon ?? <DefaultIcon />}
           </div>
-          <span className="text-sm font-semibold text-[color:var(--text)] truncate">
+          <span className="text-sm font-semibold text-(--text) truncate">
             {title}
           </span>
         </a>

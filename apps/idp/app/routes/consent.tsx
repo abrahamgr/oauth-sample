@@ -32,7 +32,7 @@ export default function ConsentPage() {
       <div className="w-full max-w-md">
         <div className="app-panel-strong rounded-2xl p-8">
           <div className="mb-6 text-center">
-            <h2 className="text-2xl font-bold text-[color:var(--text)]">
+            <h2 className="text-2xl font-bold text-(--text)">
               Authorize Access
             </h2>
             <p className="app-muted mt-1 text-sm">
@@ -44,11 +44,11 @@ export default function ConsentPage() {
             {scope.map((s) => (
               <li
                 key={s}
-                className="flex items-center gap-2 text-sm text-[color:var(--text)]"
+                className="flex items-center gap-2 text-sm text-(--text)"
               >
                 <svg
                   aria-hidden="true"
-                  className="h-4 w-4 flex-shrink-0 text-[color:var(--success)]"
+                  className="h-4 w-4 shrink-0 text-(--success)"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >

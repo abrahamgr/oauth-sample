@@ -8,7 +8,7 @@ export default function Profile() {
   if (loading) {
     return (
       <div className="page-shell page-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-[color:var(--border)] border-t-indigo-400" />
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-(--border) border-t-indigo-400" />
       </div>
     )
   }
@@ -33,7 +33,7 @@ export default function Profile() {
               />
             </svg>
           </div>
-          <p className="mb-4 text-[color:var(--danger)]">{error}</p>
+          <p className="mb-4 text-(--danger)">{error}</p>
           <Link to="/" className="app-link text-sm font-medium">
             Go home
           </Link>
@@ -46,7 +46,7 @@ export default function Profile() {
     return (
       <div className="page-shell page-center">
         <div className="app-panel-strong w-full max-w-md rounded-2xl p-8 text-center">
-          <p className="mb-4 text-sm text-[color:var(--text-muted)]">
+          <p className="mb-4 text-sm text-(--text-muted)">
             Profile data is not available right now.
           </p>
           <Link to="/" className="app-link text-sm font-medium">
@@ -72,9 +72,9 @@ export default function Profile() {
           </div>
 
           <div className="p-8">
-            <div className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
+            <div className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-(--border) bg-(--surface) p-4">
               <div>
-                <h2 className="text-base font-semibold text-[color:var(--text)]">
+                <h2 className="text-base font-semibold text-(--text)">
                   Manage your account
                 </h2>
                 <p className="app-muted mt-1 text-sm">
@@ -94,34 +94,30 @@ export default function Profile() {
             </h2>
             <dl className="space-y-4">
               <div className="flex justify-between items-start gap-4">
-                <dt className="app-muted flex-shrink-0 text-sm font-medium">
-                  sub
-                </dt>
-                <dd className="break-all text-right font-mono text-sm text-[color:var(--text)]">
+                <dt className="app-muted shrink-0 text-sm font-medium">sub</dt>
+                <dd className="break-all text-right font-mono text-sm text-(--text)">
                   {user?.sub}
                 </dd>
               </div>
               <div className="flex justify-between items-start gap-4">
-                <dt className="app-muted flex-shrink-0 text-sm font-medium">
+                <dt className="app-muted shrink-0 text-sm font-medium">
                   email
                 </dt>
-                <dd className="text-right text-sm text-[color:var(--text)]">
+                <dd className="text-right text-sm text-(--text)">
                   {user?.email}
                 </dd>
               </div>
               <div className="flex justify-between items-start gap-4">
-                <dt className="app-muted flex-shrink-0 text-sm font-medium">
-                  name
-                </dt>
-                <dd className="text-right text-sm text-[color:var(--text)]">
+                <dt className="app-muted shrink-0 text-sm font-medium">name</dt>
+                <dd className="text-right text-sm text-(--text)">
                   {user?.name}
                 </dd>
               </div>
               <div className="flex justify-between items-start gap-4">
-                <dt className="app-muted flex-shrink-0 text-sm font-medium">
+                <dt className="app-muted shrink-0 text-sm font-medium">
                   avatar_url
                 </dt>
-                <dd className="break-all text-right text-sm text-[color:var(--text)]">
+                <dd className="break-all text-right text-sm text-(--text)">
                   {user?.avatar_url ?? 'null'}
                 </dd>
               </div>

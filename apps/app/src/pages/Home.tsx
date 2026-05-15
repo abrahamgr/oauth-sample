@@ -25,19 +25,19 @@ export default function Home() {
               />
             </svg>
           </div>
-          <h1 className="mb-2 text-4xl font-bold text-[color:var(--text)]">
+          <h1 className="mb-2 text-4xl font-bold text-(--text)">
             OAuth 2.0 Demo
           </h1>
           <p className="app-muted text-lg">Authorization Code + PKCE flow</p>
         </div>
 
         <div className="app-panel-strong mb-6 rounded-2xl p-8">
-          <h2 className="mb-4 text-lg font-semibold text-[color:var(--text)]">
+          <h2 className="mb-4 text-lg font-semibold text-(--text)">
             How it works
           </h2>
           <ol className="app-muted space-y-3 text-left text-sm">
             <li className="flex gap-3">
-              <span className="app-step flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold">
+              <span className="app-step flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                 1
               </span>
               App generates a PKCE{' '}
@@ -45,28 +45,28 @@ export default function Home() {
               <code className="app-code">code_challenge</code>
             </li>
             <li className="flex gap-3">
-              <span className="app-step flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold">
+              <span className="app-step flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                 2
               </span>
               Browser redirects to the Authorization Server (
               <code className="app-code">:3001/authorize</code>)
             </li>
             <li className="flex gap-3">
-              <span className="app-step flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold">
+              <span className="app-step flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                 3
               </span>
               Auth server redirects to the Identity Provider (
               <code className="app-code">:3002/login</code>)
             </li>
             <li className="flex gap-3">
-              <span className="app-step flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold">
+              <span className="app-step flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                 4
               </span>
               After login, auth server issues a <strong>code</strong> and
               redirects back
             </li>
             <li className="flex gap-3">
-              <span className="app-step flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold">
+              <span className="app-step flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
                 5
               </span>
               App exchanges code + verifier for a{' '}

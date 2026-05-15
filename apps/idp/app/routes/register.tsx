@@ -96,7 +96,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="app-panel-strong rounded-2xl p-8">
           <div className="mb-8 text-center">
-            <h2 className="text-2xl font-bold text-[color:var(--text)]">
+            <h2 className="text-2xl font-bold text-(--text)">
               Create an account
             </h2>
             <p className="app-muted mt-1 text-sm">
@@ -172,7 +172,7 @@ export default function RegisterPage() {
               {isSubmitting ? 'Creating account…' : 'Create account'}
             </Button>
 
-            <p className="text-center text-sm text-[color:var(--text-muted)]">
+            <p className="text-center text-sm text-(--text-muted)">
               Already have an account?{' '}
               <Link
                 to={`/login?redirect=${encodeURIComponent(redirectTo)}`}

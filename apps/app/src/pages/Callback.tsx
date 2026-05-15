@@ -69,10 +69,10 @@ export default function Callback() {
               />
             </svg>
           </div>
-          <h2 className="mb-2 text-xl font-semibold text-[color:var(--text)]">
+          <h2 className="mb-2 text-xl font-semibold text-(--text)">
             Authentication failed
           </h2>
-          <p className="mb-6 text-sm text-[color:var(--danger)]">{error}</p>
+          <p className="mb-6 text-sm text-(--danger)">{error}</p>
           <Link to="/" className="app-link text-sm font-medium">
             Try again
           </Link>
@@ -84,7 +84,7 @@ export default function Callback() {
   return (
     <div className="page-shell page-center">
       <div className="text-center">
-        <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-[color:var(--border)] border-t-indigo-400" />
+        <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-(--border) border-t-indigo-400" />
         <p className="app-muted">Exchanging authorization code…</p>
       </div>
     </div>

@@ -20,7 +20,7 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="page-shell page-center">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-[color:var(--border)] border-t-indigo-400" />
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-(--border) border-t-indigo-400" />
       </div>
     )
   }

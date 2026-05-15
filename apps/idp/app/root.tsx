@@ -48,7 +48,7 @@ export default function App() {
       {isNavigating ? (
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed inset-x-0 top-0 z-50 h-1 bg-gradient-to-r from-indigo-400 via-indigo-500 to-fuchsia-500"
+          className="pointer-events-none fixed inset-x-0 top-0 z-50 h-1 bg-linear-to-r from-indigo-400 via-indigo-500 to-fuchsia-500"
         />
       ) : null}
       <Outlet />
@@ -86,7 +86,7 @@ export function ErrorBoundary() {
               />
             </svg>
           </div>
-          <h1 className="mb-2 text-xl font-semibold text-[color:var(--text)]">
+          <h1 className="mb-2 text-xl font-semibold text-(--text)">
             Identity Provider error
           </h1>
           <p className="app-muted text-sm">{message}</p>

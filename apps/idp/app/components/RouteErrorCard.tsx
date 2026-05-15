@@ -49,9 +49,7 @@ export function RouteErrorCard({
             />
           </svg>
         </div>
-        <h1 className="mb-2 text-xl font-semibold text-[color:var(--text)]">
-          {heading}
-        </h1>
+        <h1 className="mb-2 text-xl font-semibold text-(--text)">{heading}</h1>
         <p className="app-muted text-sm">{message}</p>
       </div>
     </div>

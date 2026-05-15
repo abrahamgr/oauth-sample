@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
                 />
               </svg>
             </div>
-            <h2 className="mb-2 text-xl font-bold text-[color:var(--text)]">
+            <h2 className="mb-2 text-xl font-bold text-(--text)">
               Check your email
             </h2>
             <p className="app-muted mb-6 text-sm leading-relaxed">
@@ -94,7 +94,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md">
         <div className="app-panel-strong rounded-2xl p-8">
           <div className="mb-8 text-center">
-            <h2 className="text-2xl font-bold text-[color:var(--text)]">
+            <h2 className="text-2xl font-bold text-(--text)">
               Forgot password?
             </h2>
             <p className="app-muted mt-1 text-sm">
@@ -133,7 +133,7 @@ export default function ForgotPasswordPage() {
               {isSubmitting ? 'Sending reset link…' : 'Send reset link'}
             </Button>
 
-            <p className="text-center text-sm text-[color:var(--text-muted)]">
+            <p className="text-center text-sm text-(--text-muted)">
               Remembered it?{' '}
               <Link to="/login" className="app-link font-medium">
                 Sign in

@@ -181,9 +181,7 @@ export function DocumentsCard({ userId, documents }: DocumentsCardProps) {
     <div className="mt-6 app-panel-strong overflow-hidden rounded-3xl">
       <div className="px-8 py-7">
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-[color:var(--text)]">
-            Documents
-          </h2>
+          <h2 className="text-lg font-semibold text-(--text)">Documents</h2>
           <p className="app-muted mt-1 text-sm">
             Upload files (up to 100 MB). Only you can see and download them.
           </p>
@@ -229,7 +227,7 @@ export function DocumentsCard({ userId, documents }: DocumentsCardProps) {
           <div className="flex flex-col gap-2">
             <label
               htmlFor="document-file"
-              className="cursor-pointer rounded-xl border border-dashed border-[color:var(--border-strong)] bg-[color:var(--bg-accent)] px-4 py-3 text-sm text-[color:var(--text)] transition-colors hover:border-[color:var(--accent)]"
+              className="cursor-pointer rounded-xl border border-dashed border-(--border-strong) bg-(--bg-accent) px-4 py-3 text-sm text-(--text) transition-colors hover:border-(--accent)"
             >
               <span className="block font-medium">
                 {selectedFile ? selectedFile.name : 'Choose file'}
@@ -264,7 +262,7 @@ export function DocumentsCard({ userId, documents }: DocumentsCardProps) {
           </div>
         </form>
 
-        <div className="mt-8 border-t border-[color:var(--border)] pt-6">
+        <div className="mt-8 border-t border-(--border) pt-6">
           {documents.length === 0 ? (
             <p className="app-muted text-sm">No documents yet.</p>
           ) : (
@@ -272,10 +270,10 @@ export function DocumentsCard({ userId, documents }: DocumentsCardProps) {
               {documents.map((document) => (
                 <li
                   key={document.id}
-                  className="flex items-center gap-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-3"
+                  className="flex items-center gap-3 rounded-xl border border-(--border) bg-(--surface) px-4 py-3"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-[color:var(--text)]">
+                    <p className="truncate text-sm font-medium text-(--text)">
                       {document.name}
                     </p>
                     <p className="app-muted truncate text-xs">

@@ -80,7 +80,7 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md">
         <div className="app-panel-strong rounded-2xl p-8">
           <div className="mb-8 text-center">
-            <h2 className="text-2xl font-bold text-[color:var(--text)]">
+            <h2 className="text-2xl font-bold text-(--text)">
               Set new password
             </h2>
             <p className="app-muted mt-1 text-sm">
@@ -154,7 +154,7 @@ export default function ResetPasswordPage() {
               {isSubmitting ? 'Updating password…' : 'Update password'}
             </Button>
 
-            <p className="text-center text-sm text-[color:var(--text-muted)]">
+            <p className="text-center text-sm text-(--text-muted)">
               <Link to="/login" className="app-link font-medium">
                 Back to sign in
               </Link>

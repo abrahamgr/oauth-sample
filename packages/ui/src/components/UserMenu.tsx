@@ -29,7 +29,7 @@ function ChevronIcon() {
   return (
     <svg
       aria-hidden="true"
-      className="h-4 w-4 text-[color:var(--text-subtle)]"
+      className="h-4 w-4 text-(--text-subtle)"
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
@@ -151,11 +151,11 @@ export function UserMenu({
           className="h-8 w-8 text-xs"
         />
         <span className="hidden sm:flex flex-col items-start min-w-0">
-          <span className="text-sm font-medium text-[color:var(--text)] truncate max-w-[12rem]">
+          <span className="text-sm font-medium text-(--text) truncate max-w-48">
             {name}
           </span>
           {subtitle ? (
-            <span className="text-xs text-[color:var(--text-subtle)] truncate max-w-[12rem]">
+            <span className="text-xs text-(--text-subtle) truncate max-w-48">
               {subtitle}
             </span>
           ) : null}

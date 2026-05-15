@@ -171,7 +171,7 @@ export default function ProfilePage() {
     actionData && 'error' in actionData ? actionData.error : null
   const fieldErrors =
     actionData && 'fieldErrors' in actionData
-      ? actionData.fieldErrors
+      ? (actionData.fieldErrors as { name?: string[]; avatarUrl?: string[] })
       : undefined
 
   useEffect(() => {
@@ -308,10 +308,10 @@ export default function ProfilePage() {
                 defaultValue={user.avatar_url ?? ''}
               />
 
-              <div className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+              <div className="rounded-2xl border border-(--border) bg-(--surface) p-5">
                 <div className="mb-4 flex items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-base font-semibold text-[color:var(--text)]">
+                    <h2 className="text-base font-semibold text-(--text)">
                       Profile picture
                     </h2>
                     <p className="app-muted mt-1 text-sm">
@@ -326,7 +326,7 @@ export default function ProfilePage() {
                   />
                 </div>
 
-                <label className="block cursor-pointer rounded-xl border border-dashed border-[color:var(--border-strong)] bg-[color:var(--bg-accent)] px-4 py-5 text-sm text-[color:var(--text)] transition-colors hover:border-[color:var(--accent)]">
+                <label className="block cursor-pointer rounded-xl border border-dashed border-(--border-strong) bg-(--bg-accent) px-4 py-5 text-sm text-(--text) transition-colors hover:border-(--accent)">
                   <span className="block font-medium">Choose image</span>
                   <span className="app-muted mt-1 block text-xs">
                     PNG, JPEG, WebP, or GIF
@@ -378,15 +378,15 @@ export default function ProfilePage() {
                 </div>
 
                 {avatarFieldError ? (
-                  <p className="mt-3 text-sm text-[color:var(--danger)]">
+                  <p className="mt-3 text-sm text-(--danger)">
                     {avatarFieldError}
                   </p>
                 ) : null}
               </div>
             </div>
 
-            <aside className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
-              <h2 className="text-base font-semibold text-[color:var(--text)]">
+            <aside className="rounded-2xl border border-(--border) bg-(--surface) p-5">
+              <h2 className="text-base font-semibold text-(--text)">
                 Where this shows up
               </h2>
               <p className="app-muted mt-2 text-sm leading-6">

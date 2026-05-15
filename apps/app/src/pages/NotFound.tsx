@@ -7,7 +7,7 @@ export default function NotFound() {
         <p className="app-kicker mb-3 text-sm font-semibold uppercase tracking-[0.2em]">
           404
         </p>
-        <h1 className="mb-2 text-2xl font-semibold text-[color:var(--text)]">
+        <h1 className="mb-2 text-2xl font-semibold text-(--text)">
           Page not found
         </h1>
         <p className="app-muted mb-6 text-sm">
