@@ -16,14 +16,8 @@
     "turbo": "^2.9.6",
     "typescript": "^6.0.2"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@biomejs/biome",
-      "lefthook"
-    ]
-  },
   "engines": {
-    "pnpm": ">=10"
+    "pnpm": ">=11"
   },
   "packageManager": "pnpm@11.1.2"
 }

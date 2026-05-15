@@ -3,7 +3,7 @@ packages:
   - "packages/*"
 allowBuilds:
   '@firebase/util': true
-  esbuild: set this to true or false
+  esbuild: true
   lefthook: true
-  protobufjs: set this to true or false
-  re2: set this to true or false
+  protobufjs: true
+  re2: true
