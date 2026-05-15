@@ -47,6 +47,16 @@ export interface UserResult {
   avatar_url: string | null
 }
 
+export interface DocumentResult {
+  id: string
+  user_id: string
+  name: string
+  storage_path: string
+  content_type: string
+  size_bytes: number
+  created_at: number
+}
+
 async function parseErrorResponse(res: Response): Promise<ApiClientError> {
   let body: {
     error?: string
@@ -169,4 +179,65 @@ export async function resetPassword(
   if (!res.ok) {
     throw await parseErrorResponse(res)
   }
+}
+
+// ── Documents ─────────────────────────────────────────────────────────────────
+
+export async function listDocuments(userId: string): Promise<DocumentResult[]> {
+  const res = await fetch(`${API_URL}/internal/documents`, {
+    headers: buildProfileHeaders(userId),
+  })
+
+  if (!res.ok) {
+    throw await parseErrorResponse(res)
+  }
+
+  const body = (await res.json()) as { documents: DocumentResult[] }
+  return body.documents
+}
+
+export async function createDocument(
+  userId: string,
+  input: {
+    name: string
+    storage_path: string
+    content_type: string
+    size_bytes: number
+  },
+): Promise<DocumentResult> {
+  const res = await fetch(`${API_URL}/internal/documents`, {
+    method: 'POST',
+    headers: buildProfileHeaders(userId),
+    body: JSON.stringify(input),
+  })
+
+  if (!res.ok) {
+    throw await parseErrorResponse(res)
+  }
+
+  const body = (await res.json()) as { document: DocumentResult }
+  return body.document
+}
+
+export async function deleteDocument(
+  userId: string,
+  documentId: string,
+): Promise<DocumentResult> {
+  const res = await fetch(
+    `${API_URL}/internal/documents/${encodeURIComponent(documentId)}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'X-Internal-Secret': INTERNAL_SECRET,
+        'X-User-Id': userId,
+      },
+    },
+  )
+
+  if (!res.ok) {
+    throw await parseErrorResponse(res)
+  }
+
+  const body = (await res.json()) as { document: DocumentResult }
+  return body.document
 }

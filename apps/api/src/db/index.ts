@@ -1,4 +1,4 @@
-import { eq, lt } from 'drizzle-orm'
+import { and, desc, eq, lt } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import { migrate } from 'drizzle-orm/postgres-js/migrator'
 import postgres from 'postgres'
@@ -24,6 +24,7 @@ export type User = typeof schema.users.$inferSelect
 export type OAuthCode = typeof schema.oauthCodes.$inferSelect
 export type OAuthToken = typeof schema.oauthTokens.$inferSelect
 export type PasswordResetToken = typeof schema.passwordResetTokens.$inferSelect
+export type Document = typeof schema.documents.$inferSelect
 
 // ── User queries ──────────────────────────────────────────────────────────────
 
@@ -137,6 +138,36 @@ export async function markResetTokenUsed(token: string): Promise<void> {
     .update(schema.passwordResetTokens)
     .set({ used_at: Math.floor(Date.now() / 1000) })
     .where(eq(schema.passwordResetTokens.token, token))
+}
+
+// ── Document queries ──────────────────────────────────────────────────────────
+
+export async function listDocumentsByUser(userId: string): Promise<Document[]> {
+  return db
+    .select()
+    .from(schema.documents)
+    .where(eq(schema.documents.user_id, userId))
+    .orderBy(desc(schema.documents.created_at))
+}
+
+export async function createDocument(
+  input: Omit<typeof schema.documents.$inferInsert, 'created_at'>,
+): Promise<Document> {
+  const [row] = await db.insert(schema.documents).values(input).returning()
+  return row
+}
+
+export async function deleteDocumentByIdForUser(
+  id: string,
+  userId: string,
+): Promise<Document | null> {
+  const [row] = await db
+    .delete(schema.documents)
+    .where(
+      and(eq(schema.documents.id, id), eq(schema.documents.user_id, userId)),
+    )
+    .returning()
+  return row ?? null
 }
 
 // ── Cleanup queries ───────────────────────────────────────────────────────────

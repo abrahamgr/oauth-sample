@@ -15,6 +15,13 @@
       "when": 1775776496591,
       "tag": "0001_profile_avatar",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778881607846,
+      "tag": "0002_documents",
+      "breakpoints": true
     }
   ]
 }

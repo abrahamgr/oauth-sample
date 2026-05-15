@@ -37,6 +37,20 @@ export const oauthTokens = pgTable('oauth_tokens', {
     .$defaultFn(() => Math.floor(Date.now() / 1000)),
 })
 
+export const documents = pgTable('documents', {
+  id: text('id').primaryKey(),
+  user_id: text('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  storage_path: text('storage_path').notNull().unique(),
+  content_type: text('content_type').notNull(),
+  size_bytes: bigint('size_bytes', { mode: 'number' }).notNull(),
+  created_at: integer('created_at')
+    .notNull()
+    .$defaultFn(() => Math.floor(Date.now() / 1000)),
+})
+
 export const passwordResetTokens = pgTable('password_reset_tokens', {
   token: text('token').primaryKey(),
   user_id: text('user_id')

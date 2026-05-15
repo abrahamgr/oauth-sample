@@ -4,8 +4,16 @@ import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
 import { data, redirect, useFetcher, useLoaderData } from 'react-router'
+import { DocumentsCard } from '../components/DocumentsCard'
 import { RouteErrorCard } from '../components/RouteErrorCard'
-import { ApiClientError, getUserProfile, updateUser } from '../lib/api-client'
+import {
+  ApiClientError,
+  createDocument,
+  deleteDocument,
+  getUserProfile,
+  listDocuments,
+  updateUser,
+} from '../lib/api-client'
 import { uploadUserAvatar } from '../lib/avatar.client'
 import {
   type ProfileFormFields,
@@ -23,8 +31,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect(LOGIN_PATH)
   }
 
-  const user = await getUserProfile(userId)
-  return { user }
+  const [user, documents] = await Promise.all([
+    getUserProfile(userId),
+    listDocuments(userId),
+  ])
+  return { user, documents }
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -34,6 +45,64 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 
   const form = await request.formData()
+  const intent = form.get('intent')
+
+  if (intent === 'create-document') {
+    const name = form.get('name')
+    const storagePath = form.get('storage_path')
+    const contentType = form.get('content_type')
+    const sizeRaw = form.get('size_bytes')
+
+    const sizeBytes =
+      typeof sizeRaw === 'string' ? Number.parseInt(sizeRaw, 10) : Number.NaN
+
+    if (
+      typeof name !== 'string' ||
+      typeof storagePath !== 'string' ||
+      typeof contentType !== 'string' ||
+      !Number.isFinite(sizeBytes)
+    ) {
+      return data({ error: 'Missing upload metadata.' }, { status: 400 })
+    }
+
+    try {
+      const document = await createDocument(userId, {
+        name: name.trim(),
+        storage_path: storagePath,
+        content_type: contentType,
+        size_bytes: sizeBytes,
+      })
+      return data({ success: 'Document uploaded.', document })
+    } catch (err) {
+      return data(
+        {
+          error: err instanceof Error ? err.message : 'Failed to save document',
+        },
+        { status: 400 },
+      )
+    }
+  }
+
+  if (intent === 'delete-document') {
+    const id = form.get('id')
+    if (typeof id !== 'string' || id.length === 0) {
+      return data({ error: 'Missing document id.' }, { status: 400 })
+    }
+
+    try {
+      const document = await deleteDocument(userId, id)
+      return data({ success: 'Document removed.', deletedDocument: document })
+    } catch (err) {
+      return data(
+        {
+          error:
+            err instanceof Error ? err.message : 'Failed to delete document',
+        },
+        { status: 400 },
+      )
+    }
+  }
+
   const name = form.get('name')
   const avatarUrl = form.get('avatarUrl')
 
@@ -75,7 +144,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function ProfilePage() {
-  const { user } = useLoaderData<typeof loader>()
+  const { user, documents } = useLoaderData<typeof loader>()
   const fetcher = useFetcher<typeof action>()
   const formRef = useRef<HTMLFormElement>(null)
   const avatarUrlRef = useRef<HTMLInputElement>(null)
@@ -231,6 +300,7 @@ export default function ProfilePage() {
                 />
               </FormField>
 
+              <input type="hidden" name="intent" value="profile" />
               <input
                 ref={avatarUrlRef}
                 type="hidden"
@@ -334,6 +404,8 @@ export default function ProfilePage() {
             </aside>
           </fetcher.Form>
         </div>
+
+        <DocumentsCard userId={user.id} documents={documents} />
       </div>
     </div>
   )

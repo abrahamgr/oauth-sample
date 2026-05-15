@@ -67,6 +67,17 @@ export const updateProfileBodySchema = z.object({
   avatar_url: avatarUrlField,
 })
 
+export const createDocumentBodySchema = z.object({
+  name: z.string().trim().min(1, 'Name is required').max(200),
+  storage_path: z.string().min(1).max(500),
+  content_type: z.string().min(1).max(200),
+  size_bytes: z
+    .number()
+    .int()
+    .positive()
+    .max(100 * 1024 * 1024, 'File exceeds 100 MB'),
+})
+
 export const forgotPasswordSchema = z.object({ email: emailField })
 
 export const resetPasswordSchema = z.object({
@@ -84,5 +95,6 @@ export type InternalProfileHeaders = z.infer<
   typeof internalProfileHeadersSchema
 >
 export type UpdateProfileBody = z.infer<typeof updateProfileBodySchema>
+export type CreateDocumentBody = z.infer<typeof createDocumentBodySchema>
 export type ForgotPasswordBody = z.infer<typeof forgotPasswordSchema>
 export type ResetPasswordBody = z.infer<typeof resetPasswordSchema>

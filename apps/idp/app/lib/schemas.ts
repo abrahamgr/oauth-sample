@@ -41,9 +41,18 @@ export const resetPasswordSchema = z
     path: ['confirmPassword'],
   })
 
+export const documentFormSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, 'Name is required')
+    .max(200, 'Name is too long'),
+})
+
 export type LoginFields = z.infer<typeof loginSchema>
 export type RegisterFields = z.infer<typeof registerSchema>
 export type ForgotPasswordFields = z.infer<typeof forgotPasswordSchema>
 export type ResetPasswordFields = z.infer<typeof resetPasswordSchema>
 export type ProfileFields = z.infer<typeof profileSchema>
 export type ProfileFormFields = z.infer<typeof profileFormSchema>
+export type DocumentFormFields = z.infer<typeof documentFormSchema>
