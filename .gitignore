@@ -46,6 +46,7 @@ sa-key.json
 
 # firebase
 .firebase
+firepit-log.txt
 
 # AI
 .claude/skills

@@ -28,6 +28,7 @@ A hands-on implementation of the **Authorization Code + PKCE** flow built from s
 ```bash
 pnpm install
 docker compose up -d  # start Mailpit (needed for password reset emails)
+pnpm --filter=./apps/api run db:migrate
 pnpm run dev
 ```
 
