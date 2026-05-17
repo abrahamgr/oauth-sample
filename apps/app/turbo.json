@@ -1,0 +1,12 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": ["NODE_ENV", "VITE_*"],
+      "outputs": ["dist/**", "tsconfig.tsbuildinfo"]
+    },
+    "dev": {
+      "env": ["NODE_ENV", "VITE_*"]
+    }
+  }
+}

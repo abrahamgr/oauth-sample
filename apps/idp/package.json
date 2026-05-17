@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "react-router dev --port 3002",
     "build": "react-router build --mode production",
-    "start": "react-router-serve ./build/server/index.js"
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

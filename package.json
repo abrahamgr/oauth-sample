@@ -3,11 +3,14 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "check": "biome check --write",
-    "clean:build": "rm -rf ./turbo ./packages/*/.turbo ./packages/*/dist ./packages/*/build",
     "dev": "turbo run dev",
+    "start": "turbo run start",
+    "lint": "turbo run //#biome-lint",
+    "biome-lint": "biome check .",
+    "typecheck": "turbo run typecheck",
+    "check": "biome check --write .",
     "format": "biome format --write .",
-    "lint": "biome check .",
+    "clean": "git clean -xdf .turbo dist build .react-router tsconfig.tsbuildinfo node_modules/.cache",
     "prepare": "lefthook install && ./link-skills.sh || true"
   },
   "devDependencies": {

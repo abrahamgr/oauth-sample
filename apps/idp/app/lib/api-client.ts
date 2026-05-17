@@ -64,7 +64,10 @@ async function parseErrorResponse(res: Response): Promise<ApiClientError> {
   } | null = null
 
   try {
-    body = (await res.json()) as typeof body
+    body = (await res.json()) as {
+      error?: string
+      details?: Record<string, string[]>
+    }
   } catch {
     body = null
   }

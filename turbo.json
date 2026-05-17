@@ -1,13 +1,38 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
+  "globalDependencies": ["biome.json", "tsconfig.json"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "build/**"]
+      "outputs": ["dist/**"],
+      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.*"]
     },
     "dev": {
-      "persistent": true,
-      "cache": false
-    }
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.*"]
+    },
+    "//#biome-lint": {
+      "inputs": [
+        "biome.json",
+        "apps/**/*.{ts,tsx,js,jsx,json}",
+        "packages/**/*.{ts,tsx,js,jsx,json}",
+        "!**/dist/**",
+        "!**/build/**",
+        "!**/.react-router/**",
+        "!**/node_modules/**"
+      ]
+    },
+    "db:push": { "cache": false, "persistent": false },
+    "db:generate": { "cache": false },
+    "db:migrate": { "cache": false, "persistent": false }
   }
 }
