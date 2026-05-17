@@ -60,6 +60,11 @@ export default function IdpLayout() {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  const pathname = new URL(request.url).pathname
+  if (pathname.endsWith('/logout')) {
+    return { user: null as UserResult | null }
+  }
+
   const userId = await verifySession(request)
   if (!userId) {
     return { user: null as UserResult | null }

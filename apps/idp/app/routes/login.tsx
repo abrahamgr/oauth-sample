@@ -18,6 +18,7 @@ import { getClientIp, isRateLimited } from '../lib/rate-limit.server'
 import { sanitizeRedirectTarget } from '../lib/redirects'
 import { type LoginFields, loginSchema } from '../lib/schemas'
 import {
+  buildLastRpCookie,
   buildSessionCookie,
   signSession,
   verifySession,
@@ -70,11 +71,14 @@ export async function action({ request }: ActionFunctionArgs) {
   // Sign a short-lived session JWT and set it as an HttpOnly cookie.
   // The API's /authorize route will verify this same cookie.
   const sessionToken = await signSession(user.id)
-  const cookie = await buildSessionCookie(sessionToken)
+  const sessionCookie = buildSessionCookie(sessionToken)
+  const lastRpCookie = buildLastRpCookie(redirectTo)
 
-  return redirect(redirectTo, {
-    headers: { 'Set-Cookie': cookie },
-  })
+  const headers = new Headers()
+  headers.append('Set-Cookie', sessionCookie)
+  headers.append('Set-Cookie', lastRpCookie)
+
+  return redirect(redirectTo, { headers })
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────

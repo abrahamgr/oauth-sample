@@ -8,6 +8,6 @@ export default [
     route('/profile', 'routes/profile.tsx'),
     route('/forgot-password', 'routes/forgot-password.tsx'),
     route('/reset-password', 'routes/reset-password.tsx'),
+    route('/logout', 'routes/logout.tsx'),
   ]),
-  route('/logout', 'routes/logout.ts'),
 ] satisfies RouteConfig
