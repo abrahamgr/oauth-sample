@@ -10,6 +10,12 @@
       "source": "remix-run/agent-skills",
       "sourceType": "github",
       "computedHash": "26c5bdac2f686c47eb4c4b48b6cb52401cde1dc833e6d26408ddfb22ea83c5ca"
+    },
+    "turborepo": {
+      "source": "vercel/turborepo",
+      "sourceType": "github",
+      "skillPath": "skills/turborepo/SKILL.md",
+      "computedHash": "6a23ee82918e35f8848b6fc2ccbea699d740a30fee65f288201adb4e98bf3827"
     }
   }
 }
