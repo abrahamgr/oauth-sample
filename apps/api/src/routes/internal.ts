@@ -9,6 +9,7 @@ import {
   listDocumentsByUser,
   updateUserProfile,
 } from '../db'
+import { createFirebaseCustomToken } from '../firebase-admin'
 import {
   createDocumentBodySchema,
   internalProfileHeadersSchema,
@@ -199,6 +200,32 @@ export async function internalRoutes(app: FastifyInstance) {
     })
 
     return reply.status(201).send({ document })
+  })
+
+  // POST /internal/firebase-token — mint a Firebase custom token whose uid is
+  // the IDP's internal user id. The browser exchanges it via
+  // signInWithCustomToken so Storage rules can match request.auth.uid.
+  app.post('/internal/firebase-token', async (request, reply) => {
+    const secret = request.headers['x-internal-secret']
+    if (!verifyInternalSecret(secret)) {
+      return reply.status(403).send({ error: 'Forbidden' })
+    }
+
+    const userId = getInternalUserId(request.headers as Record<string, unknown>)
+    if (!userId) {
+      return reply.status(400).send({
+        error: 'invalid_request',
+        details: { 'x-user-id': ['Required'] },
+      })
+    }
+
+    try {
+      const firebaseToken = await createFirebaseCustomToken(userId)
+      return reply.send({ firebaseToken })
+    } catch (err) {
+      request.log.error({ err }, 'Failed to mint Firebase custom token')
+      return reply.status(500).send({ error: 'firebase_token_failed' })
+    }
   })
 
   app.delete<{ Params: { id: string } }>(

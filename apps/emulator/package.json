@@ -2,7 +2,7 @@
   "name": "@oauth-sample/emulator",
   "private": true,
   "scripts": {
-    "dev": "firebase emulators:start --only storage --import=./data --export-on-exit"
+    "dev": "firebase emulators:start --only storage,auth --import=./data --export-on-exit"
   },
   "devDependencies": {
     "firebase-tools": "15.14.0"

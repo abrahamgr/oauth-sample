@@ -4,7 +4,10 @@ import {
   ref,
   uploadBytes,
 } from 'firebase/storage'
-import { getFirebaseStorageClient } from './firebase.client'
+import {
+  ensureFirebaseSignedIn,
+  getFirebaseStorageClient,
+} from './firebase.client'
 
 export const DOCUMENT_MAX_SIZE_BYTES = 100 * 1024 * 1024
 
@@ -22,6 +25,7 @@ export async function uploadDocument(
     throw new Error('File exceeds the 100 MB upload limit')
   }
 
+  await ensureFirebaseSignedIn()
   const storage = getFirebaseStorageClient()
   const safeName = file.name.replace(/[^A-Za-z0-9._-]/g, '_').slice(0, 80)
   const storagePath = `documents/${userId}/${crypto.randomUUID()}-${safeName}`
@@ -40,11 +44,13 @@ export async function uploadDocument(
 export async function getDocumentDownloadUrl(
   storagePath: string,
 ): Promise<string> {
+  await ensureFirebaseSignedIn()
   const storage = getFirebaseStorageClient()
   return getDownloadURL(ref(storage, storagePath))
 }
 
 export async function deleteDocumentObject(storagePath: string): Promise<void> {
+  await ensureFirebaseSignedIn()
   const storage = getFirebaseStorageClient()
   try {
     await deleteObject(ref(storage, storagePath))

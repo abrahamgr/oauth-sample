@@ -184,6 +184,23 @@ export async function resetPassword(
   }
 }
 
+// ── Firebase ──────────────────────────────────────────────────────────────────
+
+export async function getFirebaseCustomToken(userId: string): Promise<string> {
+  const res = await fetch(`${API_URL}/internal/firebase-token`, {
+    method: 'POST',
+    headers: buildProfileHeaders(userId),
+    body: '{}',
+  })
+
+  if (!res.ok) {
+    throw await parseErrorResponse(res)
+  }
+
+  const body = (await res.json()) as { firebaseToken: string }
+  return body.firebaseToken
+}
+
 // ── Documents ─────────────────────────────────────────────────────────────────
 
 export async function listDocuments(userId: string): Promise<DocumentResult[]> {

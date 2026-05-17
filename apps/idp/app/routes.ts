@@ -10,4 +10,5 @@ export default [
     route('/reset-password', 'routes/reset-password.tsx'),
     route('/logout', 'routes/logout.tsx'),
   ]),
+  route('/firebase-token', 'routes/firebase-token.tsx'),
 ] satisfies RouteConfig

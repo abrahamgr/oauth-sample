@@ -4,7 +4,10 @@ import {
   ref,
   uploadBytes,
 } from 'firebase/storage'
-import { getFirebaseStorageClient } from './firebase.client'
+import {
+  ensureFirebaseSignedIn,
+  getFirebaseStorageClient,
+} from './firebase.client'
 
 const AVATAR_SIZE = 256
 
@@ -70,6 +73,7 @@ export async function uploadUserAvatar(
     throw new Error('Choose an image file')
   }
 
+  await ensureFirebaseSignedIn()
   const storage = getFirebaseStorageClient()
   const blob = await resizeAvatar(file)
   const avatarRef = ref(storage, `avatars/${userId}/${crypto.randomUUID()}.jpg`)

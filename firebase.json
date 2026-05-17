@@ -42,6 +42,9 @@
     "rules": "storage.rules"
   },
   "emulators": {
+    "auth": {
+      "port": 9099
+    },
     "storage": {
       "port": 9199
     },
