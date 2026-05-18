@@ -10,6 +10,10 @@ runConfig:
   maxInstances: 10
 
 env:
+  - variable: GOOGLE_PACKAGE_MANAGER
+    value: pnpm
+    availability:
+      - BUILD
   - variable: API_URL
     secret: API_URL
   - variable: INTERNAL_SECRET

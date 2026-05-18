@@ -10,6 +10,10 @@ runConfig:
   maxInstances: 10
 
 env:
+  - variable: GOOGLE_PACKAGE_MANAGER
+    value: pnpm
+    availability:
+      - BUILD
   - variable: DATABASE_URL
     secret: DATABASE_URL
   - variable: JWT_SECRET
