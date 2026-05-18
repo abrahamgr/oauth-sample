@@ -1,5 +1,5 @@
 scripts:
-  runCommand: pnpm --filter idp run start
+  runCommand: node ./node_modules/@react-router/serve/bin.js ./build/server/index.js
 
 runConfig:
   runtime: nodejs24
