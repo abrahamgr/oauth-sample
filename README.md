@@ -229,6 +229,11 @@ Deployments are triggered manually from GitHub Actions (Actions → Deploy to Fi
    firebase apphosting:secrets:set IDP_URL
    firebase apphosting:secrets:set APP_URL
    firebase apphosting:secrets:set API_URL
+   firebase apphosting:secrets:set FIREBASE_CLIENT_EMAIL
+   firebase apphosting:secrets:set FIREBASE_PRIVATE_KEY
+
+   # or id secretes were created on web
+   firebase apphosting:secrets:grantaccess SECRET_NAME --backend=PROJECT_NAME
    ```
 
 6. **Set up Workload Identity Federation** (keyless — no JSON credentials stored)
