@@ -1,10 +1,8 @@
-const DEFAULT_APP_URL = 'http://localhost:3000'
+const DEFAULT_APP_URL = process.env.APP_URL ?? 'http://localhost:3000'
 const DEFAULT_DENY_URL = DEFAULT_APP_URL
-const ALLOWED_LOCAL_ORIGINS = new Set([
-  DEFAULT_APP_URL,
-  'http://localhost:3001',
-  'http://localhost:3002',
-])
+const ALLOWED_LOCAL_ORIGINS = new Set(
+  process.env.ALLOWED_ORIGINS?.split(',').map((o) => o.trim()),
+)
 
 export function sanitizeRedirectTarget(
   request: Request,

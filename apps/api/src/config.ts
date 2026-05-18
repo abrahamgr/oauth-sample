@@ -35,10 +35,7 @@ export const registeredClients: Record<string, OAuthClient> = {
   'oauth-sample-app': {
     clientId: 'oauth-sample-app',
     name: 'OAuth Sample App',
-    allowedRedirectUris:
-      process.env.NODE_ENV === 'production'
-        ? [`${config.appUrl}/callback`]
-        : ['http://localhost:3000/callback'],
+    allowedRedirectUris: [`${config.appUrl}/callback`],
     allowedScopes: ['openid', 'profile', 'email'],
   },
 }

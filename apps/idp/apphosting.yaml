@@ -16,6 +16,8 @@ env:
       - BUILD
   - variable: API_URL
     secret: API_URL
+  - variable: ALLOWED_ORIGINS
+    value: https://oauth-sample-7fe4b.web.app
   - variable: INTERNAL_SECRET
     secret: INTERNAL_SECRET
   - variable: SESSION_SECRET
