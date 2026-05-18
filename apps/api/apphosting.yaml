@@ -23,7 +23,7 @@ env:
   - variable: APP_URL
     secret: APP_URL
   - variable: FIREBASE_PROJECT_ID
-    secret: FIREBASE_PROJECT_ID
+    value: oauth-sample-7fe4b
   - variable: FIREBASE_CLIENT_EMAIL
     secret: FIREBASE_CLIENT_EMAIL
   - variable: FIREBASE_PRIVATE_KEY
