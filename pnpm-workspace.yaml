@@ -1,6 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
+shamefullyHoisted: false
 allowBuilds:
   '@firebase/util': true
   esbuild: true

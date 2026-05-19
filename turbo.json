@@ -1,19 +1,70 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "globalDependencies": ["biome.json", "tsconfig.json"],
+  "globalEnv": ["NODE_ENV"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["build/**", "dist/**"],
-      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.*"]
+      "outputs": [
+        "build/**",
+        "dist/**",
+        ".react-router/types/**",
+        "tsconfig.tsbuildinfo"
+      ],
+      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.*"],
+      "env": [
+        "PORT",
+        "API_URL",
+        "APP_URL",
+        "IDP_URL",
+        "DATABASE_URL",
+        "JWT_SECRET",
+        "SESSION_SECRET",
+        "INTERNAL_SECRET",
+        "SMTP_HOST",
+        "SMTP_PORT",
+        "SMTP_FROM",
+        "VITE_*"
+      ]
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": [
+        "PORT",
+        "API_URL",
+        "APP_URL",
+        "IDP_URL",
+        "DATABASE_URL",
+        "JWT_SECRET",
+        "SESSION_SECRET",
+        "INTERNAL_SECRET",
+        "SMTP_HOST",
+        "SMTP_PORT",
+        "SMTP_FROM",
+        "VITE_*"
+      ]
+    },
+    "start": {
+      "env": [
+        "PORT",
+        "API_URL",
+        "APP_URL",
+        "IDP_URL",
+        "DATABASE_URL",
+        "JWT_SECRET",
+        "SESSION_SECRET",
+        "INTERNAL_SECRET",
+        "SMTP_HOST",
+        "SMTP_PORT",
+        "SMTP_FROM",
+        "VITE_*"
+      ]
     },
     "typecheck": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.*"]
+      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.*"],
+      "outputs": [".react-router/types/**"]
     },
     "//#biome-lint": {
       "inputs": [
@@ -26,8 +77,19 @@
         "!**/node_modules/**"
       ]
     },
-    "db:push": { "cache": false, "persistent": false },
-    "db:generate": { "cache": false },
-    "db:migrate": { "cache": false, "persistent": false }
+    "db:push": {
+      "cache": false,
+      "persistent": false,
+      "env": ["DATABASE_URL"]
+    },
+    "db:generate": {
+      "cache": false,
+      "env": ["DATABASE_URL"]
+    },
+    "db:migrate": {
+      "cache": false,
+      "persistent": false,
+      "env": ["DATABASE_URL"]
+    }
   }
 }

@@ -1,5 +1,5 @@
 scripts:
-  runCommand: node ./node_modules/@react-router/serve/bin.js ./build/server/index.js
+  runCommand: node ./node_modules/@react-router/serve/bin.js ./apps/idp/build/server/index.js
 
 runConfig:
   runtime: nodejs24
